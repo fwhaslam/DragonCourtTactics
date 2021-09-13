@@ -1,0 +1,61 @@
+2021-09-08
+==================
+
+There was a problem including System.Random in the Realm package.  Unity would not load 
+the DLL once it referred to System.Random.  I thought this was due to a conflict with 
+UnityEngine.Random ( as indicated by many posts ), but it turned out to be a conflict 
+in .NET versions.  
+
+The unity projects were building to .NET 4.7.1, while my realm projects were building 
+to .NET 5.0.  Once I switched my realm projects to 4.7.1 the problem cleared versions
+
+I tried some of the other .NET versions first ( 4.5 et al. ) by editing the '.csproj' 
+project directly.  It turns out that VS 2019 has a very limited range of values it 
+will accept.
+
+ADDITIONALLY, when I was using .NET 5 in my projects, I could no longer open the 
+'project settings'.  Once I switched to 4.7.1 the problem cleared up.
+
+
+2021-09-01
+==================
+
+I am having issues with Input.mousePosition. It won't update until I click.
+I don't know where the problem resides, but I found a workaround using OnGUI/Event.current.mousePosition.
+
+Using the free Icons UI package from unity store is great, but I need a color palette that matches 
+that tool.  Try this: https://flatuicolors.com/palette/au  
+
+
+2021-08-29
+==================
+
+I keep discovering new details that have to go into project creation.  I am keeping 
+notes on it here.
+
+On this date I discovered that I needed to switch to the URP ( univeral render pipeline ) 
+for my project.  I could not change an existing project, so I have to create a new one 
+from scratch, then migrate the assets and code from the old project.
+
+
+Project Creation:
+* since I need to use URP, create a project that is 3D Urp at the start
+* use the latest unity version that ALSO supports iOS and Android
+* need to install Unity Test Framework, then create a Windows>General>Test Runner tab
+* need to install/update Package Mangager > Visual Studio Code Editor
+
+Code Organization:
+* code is broken into a number of compartments which are organized with a Visual Studio solution
+
+* object scripts will be in a 'PlayAssembly' which will become a VS module
+** there will be two 'TestAssembly' folders which will each become a VS module
+** one test assembly is for Monobehavior objects, the other is a standard NUnit tester
+	That's the PlayModeAssembly and EditModeAssembly
+** Assemblies need to setup their dependencies
+** ALL assemblies need 'auto-reference' and 'override references'
+** references are to DLLs and to other assemblies
+
+* in the project at the same level as Assets we will create a 'Code' folder
+** this folder contains modeling code which is imported as a DLL asset
+** this folder also has an NUnit test  module for the model code
+** realm model needs to copy resulting DLL into Assets/DLLs folder
