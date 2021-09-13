@@ -1,0 +1,37 @@
+
+
+no exits, goal is to get the chests
+
+triggers and actions:  trigger-a makes action-a occur ( wall opens, lava flows, boulder rolls, etc. )
+
+
+2021-09-06
+=============================
+
+I have decided that player strategic progress will revolve around hero 'slots'.
+As the player completes more dungeons thus collecting more resources, he can use 
+his rewards to purchase and upgrade slots.
+
+The player should start with one slot that only allows a single peasant.  The 
+first round of puzzles should involve evading the enemy and luring them into traps.
+The player should be able to upgrade the first slot to have some of the weaker 
+battle classes, then get a second slot, then finally get some of the support 
+classes.  ( battle = guard, archer, halbadier; support = thief, healer, mage ).
+
+We could also have limited equipment slots so that the players can have a small
+numbr of healing potions and the like.
+
+
+2021-09-06
+==============================
+
+Dragon Court Tactics will be a fantasy dungeon game that resembles tactical 
+combat but is actually a puzzle.
+
+The game becomes a puzzle because there is no random chance.  All terrain is 
+visible, all enemy actions are predictable, all trap mechanics are fixed.
+
+The game feels like tactical combat in that there are characters with movement 
+and health which inflict damage.  Progress is turned based.
+
+
