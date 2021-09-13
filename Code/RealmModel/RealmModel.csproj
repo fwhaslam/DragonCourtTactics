@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net4.7.1</TargetFramework>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo     Copying DLL from $(TargetDir) &#xD;&#xA;echo     into $(SolutionDir)Assets\DLLs&#xD;&#xA;copy $(TargetPath) $(SolutionDir)Assets\_DLLs\." />
+  </Target>
+
+</Project>
