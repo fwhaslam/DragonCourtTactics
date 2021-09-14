@@ -17,11 +17,13 @@
 
 # ingoring visual studio artifacts
 TestResults/
-Packages/
 obj/
 bin/
-Logs/
 .vsconfig
+
+# ignoring auto-generate unity folders
+UIElementsSchema/
+Logs/
 
 
 ########################
