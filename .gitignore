@@ -19,6 +19,7 @@
 TestResults/
 Packages/
 obj/
+bin/
 Logs/
 .vsconfig
 
