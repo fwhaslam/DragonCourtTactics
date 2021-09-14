@@ -4,8 +4,9 @@
     <TargetFramework>net4.7.1</TargetFramework>
   </PropertyGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo     Copying DLL from $(TargetDir) &#xD;&#xA;echo     into $(SolutionDir)Assets\DLLs&#xD;&#xA;copy $(TargetPath) $(SolutionDir)Assets\_DLLs\." />
+  <!-- in the Unity project, copy the RealmModel DLL up into Assets; otherwise ignore. -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" >
+    <Exec Command="IF exist  $(SolutionDir)Assets\_DLLs\ ( echo     Copying DLL from $(TargetDir) &#xD;&#xA;echo     into $(SolutionDir)Assets\DLLs&#xD;&#xA;copy $(TargetPath) $(SolutionDir)Assets\_DLLs\. ) ELSE ( echo     No Assets, DLL not copied )" />
   </Target>
 
 </Project>

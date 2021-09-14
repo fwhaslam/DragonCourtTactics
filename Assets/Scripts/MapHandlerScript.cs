@@ -1,25 +1,32 @@
 
 using Realm;
-
 using Shared;
-
 using System;
-
 using UnityEngine;
+
+using static Shared.UnityTools;
 
 /// <summary>
 /// Construct tiles, layout map.
 /// </summary>
 public class MapHandlerScript : MonoBehaviour {
 
-    internal GameObject tileParent,levelParent,playParent;
+    static public MapHandlerScript instance;
+
+    public Material pit,wall,hidden;
+
+    internal GameObject tileParent,levelParent,playParent,floor;
     internal Sprite[] sprites;
+    internal Material[] materials;
     internal GameObject[] tiles;
 
     /// <summary>
     /// Start is called before the first frame update
     /// </summary>
     void Start() {
+
+        if (instance!=null) throw new ApplicationException("Cannot instantiate MapHandlerScript twice.");
+        instance = this;
 
         playParent = GameObject.Find("Play");
 
@@ -49,16 +56,19 @@ public class MapHandlerScript : MonoBehaviour {
         tileParent.transform.parent = playParent.transform;
 
         sprites  = Resources.LoadAll<Sprite>("TileStone2");
+        materials = new Material[ sprites.Length ];
         tiles = new GameObject[sprites.Length];
 
         for (int ix=0;ix<sprites.Length;ix++) { 
+
             Sprite sprite = sprites[ix];
+            materials[ix] = MaterialFromSprite( sprite );
 
             GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
             tile.transform.position = new Vector3( GlobalValues.TILE_X_LOC, GlobalValues.TILE_Y_LOC, 0);
             tile.transform.parent = tileParent.transform;
-            tile.GetComponent<MeshRenderer>().material = MaterialFromSprite( sprite );
+            tile.GetComponent<MeshRenderer>().material =  materials[ix];
             tiles[ix] = tile;
         }
 
@@ -73,7 +83,8 @@ public class MapHandlerScript : MonoBehaviour {
     /// <returns>Material</returns>
     Material MaterialFromSprite( Sprite sprite ) {
 
-        Material material = new Material(Shader.Find("Standard"));
+        //Material material = new Material(Shader.Find("Standard"));
+        Material material = new Material(GetDefaultShader());
         material.mainTexture = TextureFromSprite( sprite );
 
 		return material;
@@ -118,6 +129,9 @@ print("Build Level");
             GlobalValues.currentMap = level;
         }
 print("DRAW LEVEL="+level);
+                
+        BuildFloor( level.Wide, level.Tall );
+
 
         levelParent = new GameObject("Level");
         levelParent.transform.parent = playParent.transform;
@@ -128,23 +142,44 @@ print("DRAW LEVEL="+level);
         for (int ix=0;ix<level.Wide;ix++) {
             for (int iy=0;iy<level.Tall;iy++) {
 
-                int tileId = (7*ix+5*iy) % tiles.Length;
+                // material selection
+                int tileId = (7*ix+5*iy) % materials.Length;
+               //int tileId = (7*ix+5*iy) % tiles.Length;
 
-                GameObject tile = Instantiate( tiles[tileId] );
+                //GameObject tile = Instantiate( tiles[tileId] );
+                GameObject tile =  GameObject.CreatePrimitive(PrimitiveType.Cube);
                 tile.name = "Cube("+ix+","+iy+")";
                 tile.transform.parent = levelParent.transform;
-
+                tile.GetComponent<MeshRenderer>().material = materials[tileId];
 
                 // add tile script with  reference information
 				TileScript info = tile.AddComponent<TileScript>();
-				info.SetRef( ix, iy, c.x-ix, c.y-iy );
+				info.SetRef( ix, iy, c.x-ix, c.y-iy, materials[tileId] );
 
                 // cleanup
                 info.RedrawTile();
 
 			}
 		}
+	}
 
+    static readonly float SLIGHTLY_SMALLER = 0.001f;
+
+    /// <summary>
+    /// The floor is all the 'pit' tiles as a single object.  This makes lava + water look nicer.
+    /// </summary>
+    /// <param name="w"></param>
+    /// <param name="t"></param>
+    internal void BuildFloor( int w, int t) {
+
+        if (floor!=null) return;
+
+        floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		UnityTools.UseParent( playParent, floor );
+
+        floor.transform.localScale = new Vector3( w-SLIGHTLY_SMALLER, t-SLIGHTLY_SMALLER, 0.1f );
+        floor.transform.localPosition = new Vector3( 0, 0, 0.05f );
+        floor.GetComponent<MeshRenderer>().material = pit;
 
 	}
 
