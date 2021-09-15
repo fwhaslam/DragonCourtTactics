@@ -1,3 +1,12 @@
+20201-09-15
+==================
+
+Removed RealmModel DLL from VCS, so it needs to be built before anything in Unity works.
+
+Apparently that was a horrible mistake.  VisualStudio is not able to find the Realm 
+dependencies now.  Not sure why ... but once I figure this out I may just put it back.
+I would rather that the 'build notes' were super simple.
+
 2021-09-08
 ==================
 
