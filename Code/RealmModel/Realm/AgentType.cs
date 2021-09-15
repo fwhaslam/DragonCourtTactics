@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//
+//	Copyright 2021 Frederick William Haslam born 1962
+//
+
+
+namespace Realm {
+
+	using System;
+	using System.Linq;
+	using System.Collections.Generic;
 
 
 using static Realm.AgentTrait;
-
-namespace Realm {
 
 	public class AgentType {
 
@@ -43,6 +49,7 @@ namespace Realm {
 
 			AgentType make = new AgentType();
 			make.Name = n;
+			make.Index = list.Count;
 			make.Steps = s;
 			make.Health = h;
 			make.Damage = d;
@@ -71,6 +78,9 @@ namespace Realm {
 
 		// Descriptor
 		public string Name { get; internal set; }
+
+		// position in type list
+		public int Index { get; internal set; }
 
 		// Movement
 		public int Steps { get; internal set; }

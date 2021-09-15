@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//
+//	Copyright 2021 Frederick William Haslam born 1962
+//
 
 namespace Realm {
 
@@ -11,13 +9,18 @@ namespace Realm {
 	/// </summary>
 	public enum FlagEnum {
 		None,
+
 		Entry,		// heros start here
-		Exit,		// goal, all heros must exit
-		Door,		// blocks until 'lockpick' trait opens
-		Spikes,		// damages those who enter
+		Door,		// blocks until 'locks' trait opens
 		Chest,		// goal, collect chest
-		Princess,	// goal, grab princess, carry to exit
-		Prisoner	// goal, release peasant, escort to exit
+		Princess,	// goal, release princess, escort to exit
+
+		Lever,		// trigger
+		Gears,		// hidden, will extend trigger to mechanisms
+		Pitfall,	// mechanism, switch from floor to pit
+		Hatch,		// mechanism, switch to remove/restore wall
+		Bridge,		// mechanism, switch between bridge and pit (? dupe of pitfall?)
+		Spikes,		// mechanism, spikes raise damaging those who enter
 	}
 
 	

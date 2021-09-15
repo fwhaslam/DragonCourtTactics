@@ -3,6 +3,7 @@ using Realm;
 using Shared;
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 using static Shared.UnityTools;
 
@@ -15,10 +16,13 @@ public class MapHandlerScript : MonoBehaviour {
 
     public Material pit,wall,hidden;
 
-    internal GameObject tileParent,levelParent,playParent,floor;
+    internal GameObject tileParent,levelParent,playParent;
+    internal GameObject floor;
     internal Sprite[] sprites;
     internal Material[] materials;
-    internal GameObject[] tiles;
+    //internal GameObject[] tiles;
+
+
 
     /// <summary>
     /// Start is called before the first frame update
@@ -30,9 +34,8 @@ public class MapHandlerScript : MonoBehaviour {
 
         playParent = GameObject.Find("Play");
 
-        BuildTiles();
+        BuildMaterials();
         BuildLevel();
-		BuildMenus();
 
 	}
 
@@ -48,32 +51,29 @@ public class MapHandlerScript : MonoBehaviour {
     /// <summary>
     /// Build Tile templates from sprites.
     /// </summary>
-    internal void BuildTiles() {
+    internal void BuildMaterials() {
 
-        print("BuildTiles");
+        print("BuildMaterials");
                 
         tileParent = new GameObject("Tiles");
-        tileParent.transform.parent = playParent.transform;
+        UseParent( playParent, tileParent );
 
         sprites  = Resources.LoadAll<Sprite>("TileStone2");
         materials = new Material[ sprites.Length ];
-        tiles = new GameObject[sprites.Length];
+        //tiles = new GameObject[sprites.Length];
 
         for (int ix=0;ix<sprites.Length;ix++) { 
 
             Sprite sprite = sprites[ix];
             materials[ix] = MaterialFromSprite( sprite );
 
-            GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Cube);
-
-            tile.transform.position = new Vector3( GlobalValues.TILE_X_LOC, GlobalValues.TILE_Y_LOC, 0);
-            tile.transform.parent = tileParent.transform;
-            tile.GetComponent<MeshRenderer>().material =  materials[ix];
-            tiles[ix] = tile;
+            //GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //tile.transform.position = new Vector3( GlobalValues.TILE_X_LOC, GlobalValues.TILE_Y_LOC, 0);
+            //UseParent( tileParent, tile );
+            //tile.GetComponent<MeshRenderer>().material =  materials[ix];
+            //tiles[ix] = tile;
         }
 
-        print("BuildTiles - done");
-        Console.Out.Flush();
 	}
     
     /// <summary>
@@ -83,7 +83,6 @@ public class MapHandlerScript : MonoBehaviour {
     /// <returns>Material</returns>
     Material MaterialFromSprite( Sprite sprite ) {
 
-        //Material material = new Material(Shader.Find("Standard"));
         Material material = new Material(GetDefaultShader());
         material.mainTexture = TextureFromSprite( sprite );
 
@@ -175,28 +174,12 @@ print("DRAW LEVEL="+level);
         if (floor!=null) return;
 
         floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        floor.name = "Floor";
 		UnityTools.UseParent( playParent, floor );
 
         floor.transform.localScale = new Vector3( w-SLIGHTLY_SMALLER, t-SLIGHTLY_SMALLER, 0.1f );
         floor.transform.localPosition = new Vector3( 0, 0, 0.05f );
         floor.GetComponent<MeshRenderer>().material = pit;
-
-	}
-
-//=======================================================================================================================
-
-    /// <summary>
-    /// Create images from models.  Use images in a flat panel menu.
-    /// </summary>
-    internal void BuildMenus() {
-
-        BuildHeightMenu();
-        //Sprite pic = TakePicture( "High Poly Chess Pack/Prefabs/Amber Pawn" );
-        //Image box = GameObject.Find("ShowHere").GetComponent<Image>();
-        //box.sprite = pic;
-    }
-
-    internal void BuildHeightMenu() {
 
 	}
 

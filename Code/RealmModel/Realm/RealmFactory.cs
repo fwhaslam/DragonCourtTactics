@@ -1,7 +1,12 @@
-﻿
+﻿//
+//	Copyright 2021 Frederick William Haslam born 1962
+//
+
 namespace Realm {
 
 	using System;
+	using Realm.Enums;
+	using Realm.Tools;
 
 	public class RealmFactory {
 
@@ -11,12 +16,12 @@ namespace Realm {
 
 			LevelMap map = LevelMap.Allocate( w, t );
 
-			map.HeightLayer[w/2,t/2] = HeightEnum.One;
-			map.HeightLayer[1+w/2,t/2] = HeightEnum.One;
-			map.HeightLayer[w/2,1+t/2] = HeightEnum.One;
-			map.HeightLayer[1+w/2,1+t/2] = HeightEnum.One;
+			map.Places[w/2,t/2].Height = HeightEnum.Pit;
+			map.Places[1+w/2,t/2].Height = HeightEnum.Pit;
+			map.Places[w/2,1+t/2].Height = HeightEnum.Pit;
+			map.Places[1+w/2,1+t/2].Height = HeightEnum.Pit;
 
-			map.AddAgent( AgentType.PEASANT, w/2, t/2, DirEnum.North );
+			map.AddAgent( AgentType.PEASANT, new Where(w/2-1, t/2), DirEnum.North );
 
 			return map;
 		}
@@ -35,8 +40,8 @@ namespace Realm {
 			LevelMap map = LevelMap.Allocate(wide, tall);
 
 			for (int w = 0; w < map.Wide; w++) for (int t = 0; t < map.Tall; t++) {
-					map.HeightLayer[w, t] = (HeightEnum)rnd.Next(6);
-				}
+				map.Places[w, t].Height = (HeightEnum)rnd.Next(6);
+			}
 
 			// === add agents
 			int agents = 3 + rnd.Next(12);
@@ -44,25 +49,27 @@ namespace Realm {
 
 			for (int n = 0; n < agents; n++) {
 
+				// find empty spot
 				do {
 					ax = rnd.Next(map.Wide);
 					at = rnd.Next(map.Tall);
-				} while (map.AgentLayer[ax, at] != LevelMap.NO_AGENT);
+				} while (map.Places[ax, at].Agent!=null);
 
 				DirEnum face = (DirEnum)rnd.Next(8);
 				AgentType type = AgentType.Get(rnd.Next(AgentType.Count()));
 
-				map.AddAgent(type, ax, at, face);
+				map.AddAgent(type, new Where(ax, at), face);
 			}
 
 			// === add flags
 			int flags = 3 + rnd.Next(12);
 			for (int n = 0; n < flags; n++) {
 
+				// find empty spot
 				do {
 					ax = rnd.Next(map.Wide);
 					at = rnd.Next(map.Tall);
-				} while (map.FlagLayer[ax, at] != FlagEnum.None);
+				} while (map.Places[ax, at].Flag != FlagEnum.None);
 
 				FlagEnum type = (FlagEnum)rnd.Next(FlagEnumTraits.Count());
 

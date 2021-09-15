@@ -1,15 +1,11 @@
 //
-//	Global values and definitions
+//	Copyright 2021 Frederick William Haslam born 1962 in the USA
 //
 
-using Realm;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+namespace Shared {
+	
+	using Realm;
 
-
-
-namespace Shared { 
 	static public class GlobalValues { 
 
 		// current map for editing or play
@@ -18,6 +14,11 @@ namespace Shared {
 		// Offscreen Location of preloaded tiles.
 		static public readonly float TILE_X_LOC = 1000f;
 		static public readonly float TILE_Y_LOC = 1000f;
+
+		// scene names
+		static public readonly string EntrySceneName = "_MainScene";
+		static public readonly string EditSceneName = "EditScene";
+		static public readonly string PlaySceneName = "PlayScene";
 	}
 }
 

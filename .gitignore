@@ -11,6 +11,10 @@
 /[Mm]emoryCaptures/
 
 ######################## Fred Haslam has some special attributes in this project
+
+# ignoring DLL copied into unity folder
+RealmModel.dll*
+
 # ignoring intellij files
 *.iml
 .idea/

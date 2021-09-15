@@ -2,6 +2,7 @@
 using Shared;
 
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -21,10 +22,15 @@ public class MainCameraHandler : MonoBehaviour {
     internal Vector3 focus = new Vector3(0,0,0);
     internal float currentTurning,angle,zoom;
     
+    // drag
     internal bool isDragging;
     internal Vector3 mouseDragFrom;
 
     internal readonly Vector3 cameraUp = Vector3.forward;
+
+    // when a tile is dragged, move the camera
+    static internal readonly UnityEvent<Vector3> tileDragEvent = new UnityEvent<Vector3>();
+
  
 //======================================================================================================================
 
@@ -51,7 +57,7 @@ public class MainCameraHandler : MonoBehaviour {
 	void Update() {
 
         // for hover, tap and drag
-        MouseDrag();
+        //MouseDrag();
 
         // mouse wheel and screen pinch
         CheckZoom();
@@ -66,7 +72,40 @@ public class MainCameraHandler : MonoBehaviour {
         FixCameraLocation( focus, angle, zoom );
 
 	}
-    
+
+//======================================================================================================================
+
+    /// <summary>
+    /// Add self as Event Listener
+    /// </summary>
+	public void OnEnable() {
+        tileDragEvent.AddListener( TileDragFunction );
+	}
+
+    /// <summary>
+    /// Remove self as Event Listener
+    /// </summary>
+	public void OnDisable() {
+        tileDragEvent.RemoveListener( TileDragFunction );
+	}
+
+    /// <summary>
+    /// Call this global method to report tile drag events.
+    /// </summary>
+    /// <param name="delta"></param>
+    static public void TileDragged( Vector3 delta ) {
+        tileDragEvent.Invoke( delta );
+	}
+
+    /// <summary>
+    /// Implement camera drag, with location and facing limits.
+    /// </summary>
+    /// <param name="delta"></param>
+    public void TileDragFunction( Vector3 delta ) {
+        print("Tile Drag = "+delta);
+        MoveCamera( delta );
+	}
+   
  //======================================================================================================================
 
     /// <summary>
@@ -81,8 +120,12 @@ public class MainCameraHandler : MonoBehaviour {
 		transform.LookAt(focus, cameraUp );
 	}
 
+    /// <summary>
+    /// No longer reliable, need to somehow use the IPointer system.
+    /// </summary>
     internal void MouseDrag() {
 
+print("MouseDrag");
         if (Input.GetMouseButtonDown(0)) {
 
             // discard clicks on UI objects.
@@ -92,6 +135,7 @@ public class MainCameraHandler : MonoBehaviour {
             }
 
 		}
+
         if (Input.GetMouseButtonUp(0)) {
             isDragging = false;
 		}
@@ -102,21 +146,30 @@ public class MainCameraHandler : MonoBehaviour {
             Vector3 delta = newMouse - mouseDragFrom;
             mouseDragFrom = newMouse;
 
-            Vector2 forward = delta.y * MathTools.DegreesToPosition( angle );
-            Vector2 sideway = delta.x * MathTools.DegreesToPosition( angle+90 );
-
-            // do not move past edge of map
-            focus.x += ( forward.x + sideway.x ) * zoom / 100f / startZoom;
-            float xlimit = GlobalValues.currentMap.Wide / 2f;
-            if (focus.x<-xlimit) focus.x = -xlimit;
-            else if (focus.x>xlimit) focus.x = xlimit;
-
-            focus.y += ( forward.y + sideway.y ) * zoom / 100f / startZoom;
-            float ylimit = GlobalValues.currentMap.Tall / 2f;
-            if (focus.y<-ylimit) focus.y = -ylimit;
-            if (focus.y>ylimit) focus.y = ylimit;
+            MoveCamera( delta );
 
 		}
+	}
+
+    /// <summary>
+    /// Used with 'drag' logic.
+    /// </summary>
+    /// <param name="delta"></param>
+    internal void MoveCamera( Vector3 delta) {
+
+        Vector2 forward = delta.y * MathTools.DegreesToPosition( angle );
+        Vector2 sideway = delta.x * MathTools.DegreesToPosition( angle+90 );
+
+        // do not move past edge of map
+        focus.x += ( forward.x + sideway.x ) * zoom / 100f / startZoom;
+        float xlimit = GlobalValues.currentMap.Wide / 2f;
+        if (focus.x<-xlimit) focus.x = -xlimit;
+        else if (focus.x>xlimit) focus.x = xlimit;
+
+        focus.y += ( forward.y + sideway.y ) * zoom / 100f / startZoom;
+        float ylimit = GlobalValues.currentMap.Tall / 2f;
+        if (focus.y<-ylimit) focus.y = -ylimit;
+        if (focus.y>ylimit) focus.y = ylimit;
 	}
 
     internal void CheckZoom() {

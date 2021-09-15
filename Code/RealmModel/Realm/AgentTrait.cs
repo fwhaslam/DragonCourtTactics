@@ -1,4 +1,7 @@
-﻿
+﻿//
+//	Copyright 2021 Frederick William Haslam born 1962
+//
+
 namespace Realm {
 
 	using System;

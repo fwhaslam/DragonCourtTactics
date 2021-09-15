@@ -1,7 +1,12 @@
-﻿
-using UnityEngine;
+﻿//
+//	Copyright 2021 Frederick William Haslam born 1962 in the USA
+//
 
 namespace Shared {
+	
+	using UnityEngine;
+	using UnityEngine.SceneManagement;
+	using static UnityEngine.MonoBehaviour;
 
 	public class UnityTools {
 
@@ -19,6 +24,27 @@ namespace Shared {
 		/// </summary>
 		static public Shader GetDefaultShader() {
 			return Shader.Find("Universal Render Pipeline/Lit");
+		}
+
+		static public void ChangeScene( string sceneName ) {
+			SceneManager.LoadScene( sceneName );
+		}
+
+		
+		/// <summary>
+		/// Debug Utility for examining component tree.
+		/// </summary>
+		/// <param name="obj"></param>
+		static public void inspectComponents( GameObject obj ) {
+
+			print("INSPECT >>>>>>> "+obj);
+			 Component[] comps = obj.GetComponents<Component>(); 
+
+			print("COUNT = "+comps.Length );
+			foreach ( Component cmp in comps ) {
+				print("COMPONENT="+cmp);
+				print("TYPE="+cmp.GetType());
+			}
 		}
 	}
 }

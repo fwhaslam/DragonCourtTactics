@@ -1,5 +1,6 @@
 
 using Realm;
+using Realm.Enums;
 
 using Shared;
 
@@ -24,21 +25,27 @@ public class EditToolsMenuScript : MonoBehaviour {
     public GameObject cursor;
 
 	internal GameObject workingTile;
-    internal TMP_Dropdown heightMenu, flagMenu, agentMenu ;
+    internal TMP_Dropdown optionMenu, sizeMenu, heightMenu, flagMenu, agentMenu ;
 
-    internal static UnityEvent<GameObject> tileEvent = new UnityEvent<GameObject>();
+    // single tile change event
+    internal static UnityEvent<GameObject> tileSelectEvent = new UnityEvent<GameObject>();
+
+    // map needs to redraw event
+    internal static UnityEvent mapRedrawEvent = new UnityEvent();
 
 
 	// Start is called before the first frame update
 	public void Start() {
 
+        optionMenu = GameObject.Find("OptionPicker").GetComponent<TMP_Dropdown>();
+        sizeMenu = GameObject.Find("SizePicker").GetComponent<TMP_Dropdown>();
 		heightMenu = GameObject.Find("HeightPicker").GetComponent<TMP_Dropdown>();
         flagMenu = GameObject.Find("FlagPicker").GetComponent<TMP_Dropdown>();
         agentMenu = GameObject.Find("AgentPicker").GetComponent<TMP_Dropdown>();
 
-        // fill in options on menus
-        heightMenu.ClearOptions();
-        heightMenu.AddOptions( new List<string>(Enum.GetNames(typeof(HeightEnum))) );
+		// fill in options on menus
+		heightMenu.ClearOptions();
+		heightMenu.AddOptions(new List<string>(Enum.GetNames(typeof(HeightEnum))));
 
 		flagMenu.ClearOptions();
 		flagMenu.AddOptions(new List<string>(Enum.GetNames(typeof(FlagEnum))));
@@ -47,6 +54,8 @@ public class EditToolsMenuScript : MonoBehaviour {
 		agentMenu.AddOptions( AgentType.GetOptions() );
 
         // add listeners
+        optionMenu.onValueChanged.AddListener(delegate {DoChangeOption();});
+        sizeMenu.onValueChanged.AddListener(delegate {DoChangeSize();});
         heightMenu.onValueChanged.AddListener(delegate {DoChangeHeight();});
         flagMenu.onValueChanged.AddListener(delegate {DoChangeFlag();});
         agentMenu.onValueChanged.AddListener(delegate {DoChangeAgent();});
@@ -63,14 +72,16 @@ public class EditToolsMenuScript : MonoBehaviour {
     /// Add self as Event Listener
     /// </summary>
 	public void OnEnable() {
-	    tileEvent.AddListener( TileEventFunction );	 
+	    tileSelectEvent.AddListener( TileEventFunction );	 
+        mapRedrawEvent.AddListener( MapRedrawFunction );
 	}
 
     /// <summary>
     /// Remove self as Event Listener
     /// </summary>
 	public void OnDisable() {
-        tileEvent.RemoveListener( TileEventFunction );
+        tileSelectEvent.RemoveListener( TileEventFunction );
+        mapRedrawEvent.RemoveListener( MapRedrawFunction );
 	}
 
     /// <summary>
@@ -81,29 +92,35 @@ public class EditToolsMenuScript : MonoBehaviour {
         DoUpdateWorkingTile( tile );
 	}
 
-//======================================================================================================================
-
-	/// <summary>
-	/// Utility for examining component tree.
-	/// </summary>
-	/// <param name="obj"></param>
-	void inspectComponents( GameObject obj ) {
-print("INSPECT >>>>>>> "+obj);
-         Component[] comps = obj.GetComponents<Component>(); 
-print("COUNT = "+comps.Length );
-        foreach ( Component cmp in comps ) {
-            print("COMPONENT="+cmp);
-            print("TYPE="+cmp.GetType());
-		}
+    /// <summary>
+    /// Delegate for map redraw events.
+    /// </summary>
+    public void MapRedrawFunction() {
+        print("Map Redraw Function ");
 	}
 
+    public void TileDragFunction( Vector3 delta ) {
+        print("Tile Drag = "+delta);
+	}
+    
+//======================================================================================================================
+//      Options Menu
+
+
+   
+//======================================================================================================================
+//      Size Menu
+
+//======================================================================================================================
+// Tile Select + Drag
+
     /// <summary>
-    /// Select of unselect ( who==null) current tile.
+    /// When a tile is clicked, invoke this method.
     /// </summary>
     /// <param name="who"></param>
     static public void SelectTile( GameObject who ) {
 //print("SelectTile = "+who );
-        tileEvent.Invoke( who );
+        tileSelectEvent.Invoke( who );
     }
 
     /// <summary>
@@ -136,14 +153,50 @@ print("COUNT = "+comps.Length );
         LevelMap map = currentMap;
 
         // setting menu values
-        heightMenu.value = (int)map.HeightLayer[myRef.X, myRef.Y];
-        flagMenu.value = (int)map.FlagLayer[myRef.X, myRef.Y];
+        Place place = map.Places[myRef.MLOC.X, myRef.MLOC.Y];
+        heightMenu.value = (int)place.Height;
+        flagMenu.value = (int)place.Flag;
 
-		//int agentId = map.AgentLayer[myRef.X, myRef.Y];
-        //Agent agent = map.Agents[agentId];
+		//agentMenu.value = place.Agent.Type.Index;
+	}
+
+    /// <summary>
+    /// When a tile is dragged, call this method.
+    /// </summary>
+    /// <param name="delta"></param>
+    static public void DragTile( Vector3 delta ) {
+
 	}
     
 //======================================================================================================================
+
+    public void DoChangeOption() {
+        var pick = optionMenu.options[optionMenu.value].text;
+print("OPTION="+pick);
+        switch (pick) { 
+            case "Exit": 
+                UnityTools.ChangeScene( GlobalValues.EntrySceneName );
+                break;
+            case "Save": /*load*/ break;
+            case "Load": /*save*/ break;
+            case "Reset": /*save*/ break;
+            default:
+                throw new UnityException("Unknown Option Menu Selection = ["+pick+"]");
+		}
+	}
+
+    public void DoChangeSize() {
+        var pick = sizeMenu.options[optionMenu.value].text;
+print("SIZE="+pick);
+        switch (pick) { 
+            case "+North/South": break;
+            case "-North/South": /*load*/ break;
+            case "+East/West": /*save*/ break;
+            case "-East/West": /*save*/ break;
+            default:
+                throw new UnityException("Unknown Size Menu Selection = ["+pick+"]");
+		}
+	}
 
     public void DoChangeHeight() {
 print("NEW HIEGHT="+heightMenu.value);
@@ -153,6 +206,8 @@ print("NEW HIEGHT="+heightMenu.value);
 
     public void DoChangeAgent() {
         print("NEW AGENT="+agentMenu.value);
+        AgentType type = AgentType.Get( agentMenu.value );
+        workingTile.GetComponent<TileScript>().AddAgent( type, DirEnum.North );
 	}
 
     public void DoChangeFlag() {

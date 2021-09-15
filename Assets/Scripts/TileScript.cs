@@ -1,4 +1,6 @@
 using Realm;
+using Realm.Enums;
+using Realm.Tools;
 
 using Shared;
 
@@ -9,7 +11,7 @@ using UnityEngine.EventSystems;
 
 using static Shared.GlobalValues;
 
-public class TileScript : MonoBehaviour, IPointerDownHandler {
+public class TileScript : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
     internal GameObject token;
 
@@ -26,7 +28,7 @@ public class TileScript : MonoBehaviour, IPointerDownHandler {
     
 	public void OnPointerDown(PointerEventData eventData) {
 //print("CLICKED=="+transform.name);
-		EditToolsMenuScript.SelectTile( transform.gameObject );
+		EditToolsMenuScript.SelectTile( gameObject );
 	}
 
     public void TakeCursor( GameObject cursor ) {
@@ -36,7 +38,7 @@ public class TileScript : MonoBehaviour, IPointerDownHandler {
 
         // approximate the 'top' of the object ( z coord )
         //var top = transform.lossyScale.z; 
-        var top = CalcZ( currentMap.HeightLayer[ X, Y ] );
+        var top = CalcZ( currentMap.Places[ MLOC.X, MLOC.Y ].Height );
 
         cursor.transform.position = new Vector3( where.x, where.y, top );
 
@@ -45,23 +47,23 @@ public class TileScript : MonoBehaviour, IPointerDownHandler {
     public void RedrawTile() {
 //print("REDRAW="+name);
 
-        var flag = currentMap.FlagLayer[ X, Y ];
+        Place place = currentMap.Places[MLOC.X,MLOC.Y];
+        var flag = place.Flag;
 
         // change 'cube' size
-        var height = currentMap.HeightLayer[ X, Y ];
+        var height = place.Height;
         var top = CalcZ( height );
         FixCube( height, top );
 
-		int agentId = currentMap.AgentLayer[X, Y];
-		//Agent agent = currentMap.Agents[agentId];
+		Agent agent = place.Agent;
 
-        FixAgent( agentId, top );
+        FixAgent( agent, top );
     }
 
-    void FixAgent( int agentId, float top ) {
+    void FixAgent( Agent agent, float top ) {
 
-        // shift agent
-        if (agentId!=0) {
+        // Agent found
+        if (agent!=null) { 
 
             // token exists
             if (token!=null) {
@@ -74,7 +76,7 @@ print(">>>>>>>>>>>>>>>> CREATING AGENT ===== at"+this.name);
 				token = Instantiate(Resources.Load("_prefabs/GoodToken") as GameObject);
 				//GameObject basis = GameObject.Find("GoodToken");
 				//token = GameObject.Instantiate( basis );
-				token.transform.localPosition = new Vector3( DX, DY, top );
+				token.transform.localPosition = new Vector3( VLOC.x+0.5f, VLOC.y+0.5f, top+0.5f );
                 token.SetActive( true );
 
                 // TODO: create an 'agent pool'
@@ -84,8 +86,8 @@ print(">>>>>>>>>>>>>>>> CREATING AGENT ===== at"+this.name);
             }
 		}
 
-        // remove agent
-        if (agentId==0) {
+        // Agent not found
+        else {
 
             // no token
             if (token==null) {
@@ -102,7 +104,7 @@ print(">>>>>>>>>>>>>>>> CREATING AGENT ===== at"+this.name);
     internal void FixCube( HeightEnum height, float top ) {
 
         transform.localScale = new Vector3( 1, 1, top );
-        transform.localPosition = new Vector3( DX, DY, 0 );
+        transform.localPosition = new Vector3( VLOC.x-0.5f, VLOC.y-0.5f, top/2 );
 
         GetComponent<MeshRenderer>().material =  PickMaterial( height );
 	}
@@ -119,12 +121,19 @@ print(">>>>>>>>>>>>>>>> CREATING AGENT ===== at"+this.name);
         return Floor;
 	}
 
+    
+//======================================================================================================================
 
     /// <summary>
     /// Invoked by Dropdown Menu.
     /// </summary>
     public void SetHeight( int height ) {
-        currentMap.HeightLayer[ X, Y ] = (HeightEnum)height;
+        currentMap.Places[ MLOC.X, MLOC.Y ].Height = (HeightEnum)height;
+        RedrawTile();
+	}
+
+    public void AddAgent( AgentType type, DirEnum face ) {
+        currentMap.AddAgent( type, MLOC, face );
         RedrawTile();
 	}
     
@@ -139,21 +148,38 @@ print(">>>>>>>>>>>>>>>> CREATING AGENT ===== at"+this.name);
     /// <param name="dy"></param>
     /// <param name="floor">default material when this cube is not pit nor wall.</param>
     public void SetRef( int x, int y, float dx, float dy, Material floor ) {
-		this.X = x;
-		this.Y = y;
-        this.DX = dx;
-        this.DY = dy;
+        this.MLOC = new Where( x, y );
+        this.VLOC = new Vector2( dx, dy );
         this.Floor = floor;
 	}
 
-	public int X { get; internal set; }
+    // location in map
+    public Where MLOC { get; internal set; }
 
-	public int Y { get; internal set; }
+    // center of tile in view
+	public Vector2 VLOC { get; internal set; }
 
-	public float DX { get; internal set; }
+    // material for 'pit' level tiles
+    public Material Floor {  get; internal set; }
 
-	public float DY { get; internal set; }
+//======================================================================================================================
 
-    public Material Floor { get; internal set; }
+    internal Vector3 lastDrag = Vector3.zero;
 
+	public void OnBeginDrag(PointerEventData eventData) {
+		//print("Begin Drag = "+eventData );
+        lastDrag = eventData.position;
+	}
+
+	public void OnDrag(PointerEventData eventData) {
+		//print("On Drag = "+eventData );
+        Vector3 next = eventData.position;
+        Vector3 delta = next - lastDrag;
+        lastDrag = next;
+        MainCameraHandler.TileDragged( delta );
+	}
+
+	public void OnEndDrag(PointerEventData eventData) {
+		//print("End Drag = "+eventData );
+	}
 }

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//
+//	Copyright 2021 Frederick William Haslam born 1962 in the USA
+//
 
-using UnityEngine;
 
 namespace Shared {
+
+	using UnityEngine;
 
 	static public class MathTools {
 

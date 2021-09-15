@@ -1,6 +1,10 @@
-﻿using System;
+﻿//
+//	Copyright 2021 Frederick William Haslam born 1962
+//
 
-namespace Realm {
+namespace Realm.Enums {
+
+	using System;
 
 	public enum DirEnum {
 		North,

@@ -1,22 +1,33 @@
-﻿
+﻿//
+//	Copyright 2021 Frederick William Haslam born 1962
+//
+
 namespace Realm {
 
-	using System;
+	using Realm.Enums;
+	using Realm.Tools;
 
 	public class Agent {
  
-		/// <summary>
-		/// Location in Agent List.  ID for map.
-		/// </summary>
-		public int Index {  get; set; }
+		public Agent(int  x,int y) {
+			Where = new Where(x,y);
+		}
+		public Agent(Where loc) {
+			Where = new Where(loc);
+		}
+
+		public Agent( Agent src ) {
+			this.Where = src.Where;
+			this.Type = src.Type;
+			this.Face = src.Face;
+		}
 
 		public AgentType Type {  get; set; }
 
 		public DirEnum Face { get; set; }
 
-		public int X { get; set; }
+		public Where Where { get; set; }
 
-		public int Y { get; set; }
 
 	}
 }
