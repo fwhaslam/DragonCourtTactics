@@ -13,14 +13,13 @@ namespace EditUI {
 	public class ChangeSizePanelScript : MonoBehaviour, IPointerClickHandler, ISelectHandler, IDeselectHandler {
 
 		public GameObject sizePicker;
+		public int rows,columns;
 
 		internal Camera viewCam;
 		internal RectTransform panelRect;
 		internal GameObject addIcon, cutIcon;
 
 		internal int mark = 0;
-		internal bool isShowing = false;
-		static readonly int OPTIONS = 2;
 
 		/// <summary>
 		/// Called just before object is instantiated.
@@ -34,7 +33,10 @@ namespace EditUI {
 			addIcon = GameObject.Find("AddRowIcon");
 			cutIcon = GameObject.Find("CutRowIcon");
 
+			Hide();
 		}
+
+		internal bool IsActive() { return gameObject.activeSelf; }
 
 		/// <summary>
 		/// When the 
@@ -74,9 +76,9 @@ print(">>>> OnPointerClick mark="+(++mark));	// screen space
 		/// Called when SizePicker button is clicked.  Attach to SizePicker.
 		/// </summary>
 		public void SizePickerButtonClicked() {
-print(">>>> Size Picker Clicked showing?="+isShowing+"   mark="+(++mark) );
+print(">>>> Size Picker Clicked showing?="+IsActive()+"   mark="+(++mark) );
 
-			if (!isShowing) {
+			if (!IsActive()) {
 				Show();
 			}
 			else {
@@ -113,9 +115,9 @@ print("InPanel="+isClickInPanel+"   InPicker="+isClickInPicker);
 			//Vector2 localPoint;
 			//RectTransformUtility.ScreenPointToLocalPointInRectangle(panelRect, click, viewCam, out localPoint);
 print("LOCAL PT = " + localPoint);
-			float ratio = localPoint.x / panelRect.rect.width;
-print("RATIO = " + ratio);
-			int pick = Mathf.Clamp( (int)( OPTIONS * ratio ), 0, OPTIONS-1 );
+			int columnPick = Mathf.Clamp( (int)( columns * localPoint.x / panelRect.rect.width ), 0, columns-1 );
+			int rowPick = Mathf.Clamp( (int)( rows * localPoint.y / panelRect.rect.height ), 0, rows-1 );
+			int pick = rowPick * columns + columnPick;
 print("PICK="+pick);
 
 			switch ( pick ) {
@@ -126,9 +128,9 @@ print("PICK="+pick);
 		}
 
 		public void Show() {
-print("SHOW showing="+isShowing);
+print("SHOW showing="+IsActive());
 
-			if (isShowing) return;
+			if (IsActive()) return;
 
 			// rotate icons to match camera orientation
 			//float turn = Camera.main.transform.localEulerAngles.z;
@@ -139,18 +141,16 @@ print("SHOW showing="+isShowing);
 
 print(">>>> SETTING ISSHOWING TO TRUE");
 			transform.position = sizePicker.transform.position;
-			isShowing = true;
 			gameObject.SetActive(true);
 			UnityTools.SetSelected( gameObject );
 			
 		}
 
 		public void Hide() {
-print("HIDE showing="+isShowing);
-			if (!isShowing) return;
+print("HIDE showing="+IsActive());
+			if (!IsActive()) return;
 
 print(">>>> SETTING ISSHOWING TO FALSE");
-			isShowing = false;
 			gameObject.SetActive(false);
 		}
 	}

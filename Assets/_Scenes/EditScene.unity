@@ -3666,7 +3666,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &940977306
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3741,6 +3741,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sizePicker: {fileID: 474018942}
+  rows: 1
+  columns: 2
 --- !u!1 &952902701
 GameObject:
   m_ObjectHideFlags: 0
