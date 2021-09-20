@@ -185,6 +185,15 @@ print("DRAW LEVEL="+level);
 
 //=======================================================================================================================
 
+    public void AddRowToMap() {
+        print("Add Row To Map");
+	}
+
+    public void CutRowFromMap() {
+        print("Cut Row From Map");
+	}
+//=======================================================================================================================
+
     Sprite TakePicture( string prefabPath ) {
 
         //GameObject target = Resources.Load<GameObject>( prefabPath );

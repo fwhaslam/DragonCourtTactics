@@ -25,7 +25,7 @@ public class EditToolsMenuScript : MonoBehaviour {
     public GameObject cursor;
 
 	internal GameObject workingTile;
-    internal TMP_Dropdown optionMenu, sizeMenu, heightMenu, flagMenu, agentMenu ;
+    internal TMP_Dropdown optionMenu, heightMenu, flagMenu, agentMenu ;
 
     // single tile change event
     internal static UnityEvent<GameObject> tileSelectEvent = new UnityEvent<GameObject>();
@@ -38,7 +38,6 @@ public class EditToolsMenuScript : MonoBehaviour {
 	public void Start() {
 
         optionMenu = GameObject.Find("OptionPicker").GetComponent<TMP_Dropdown>();
-        sizeMenu = GameObject.Find("SizePicker").GetComponent<TMP_Dropdown>();
 		heightMenu = GameObject.Find("HeightPicker").GetComponent<TMP_Dropdown>();
         flagMenu = GameObject.Find("FlagPicker").GetComponent<TMP_Dropdown>();
         agentMenu = GameObject.Find("AgentPicker").GetComponent<TMP_Dropdown>();
@@ -55,7 +54,6 @@ public class EditToolsMenuScript : MonoBehaviour {
 
         // add listeners
         optionMenu.onValueChanged.AddListener(delegate {DoChangeOption();});
-        sizeMenu.onValueChanged.AddListener(delegate {DoChangeSize();});
         heightMenu.onValueChanged.AddListener(delegate {DoChangeHeight();});
         flagMenu.onValueChanged.AddListener(delegate {DoChangeFlag();});
         agentMenu.onValueChanged.AddListener(delegate {DoChangeAgent();});
@@ -185,18 +183,6 @@ print("OPTION="+pick);
 		}
 	}
 
-    public void DoChangeSize() {
-        var pick = sizeMenu.options[optionMenu.value].text;
-print("SIZE="+pick);
-        switch (pick) { 
-            case "+North/South": break;
-            case "-North/South": /*load*/ break;
-            case "+East/West": /*save*/ break;
-            case "-East/West": /*save*/ break;
-            default:
-                throw new UnityException("Unknown Size Menu Selection = ["+pick+"]");
-		}
-	}
 
     public void DoChangeHeight() {
 print("NEW HIEGHT="+heightMenu.value);
