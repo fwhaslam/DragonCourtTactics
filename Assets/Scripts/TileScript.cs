@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 using static Shared.GlobalValues;
+using static Shared.UnityTools;
 
 public class TileScript : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
@@ -80,7 +81,7 @@ print(">>>>>>>>>>>>>>>> CREATING AGENT ===== at"+this.name);
                 token.SetActive( true );
 
                 // TODO: create an 'agent pool'
-                UnityTools.UseParent( MapHandlerScript.instance.gameObject, token );
+                UseParent( ManageArenaScript.instance.gameObject, token );
 
                 // TODO: add decal for type
             }
@@ -116,8 +117,8 @@ print(">>>>>>>>>>>>>>>> CREATING AGENT ===== at"+this.name);
 	}
 
     internal Material PickMaterial( HeightEnum height ) {
-        if (height==HeightEnum.Pit) return MapHandlerScript.instance.hidden;
-        if (height==HeightEnum.Wall) return MapHandlerScript.instance.wall;
+        if (height==HeightEnum.Pit) return ManageArenaScript.instance.hidden;
+        if (height==HeightEnum.Wall) return ManageArenaScript.instance.wall;
         return Floor;
 	}
 

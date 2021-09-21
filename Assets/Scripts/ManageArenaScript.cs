@@ -10,18 +10,16 @@ using static Shared.UnityTools;
 /// <summary>
 /// Construct tiles, layout map.
 /// </summary>
-public class MapHandlerScript : MonoBehaviour {
+public class ManageArenaScript : MonoBehaviour {
 
-    static public MapHandlerScript instance;
+    static public ManageArenaScript instance;
 
     public Material pit,wall,hidden;
 
-    internal GameObject tileParent,levelParent,playParent;
+    internal GameObject tileParent,levelParent;
     internal GameObject floor;
     internal Sprite[] sprites;
     internal Material[] materials;
-    //internal GameObject[] tiles;
-
 
 
     /// <summary>
@@ -29,10 +27,8 @@ public class MapHandlerScript : MonoBehaviour {
     /// </summary>
     void Start() {
 
-        if (instance!=null) throw new ApplicationException("Cannot instantiate MapHandlerScript twice.");
+        if (instance!=null) throw new ApplicationException("Cannot instantiate ArenaHandlerScript twice.");
         instance = this;
-
-        playParent = GameObject.Find("Play");
 
         BuildMaterials();
         BuildLevel();
@@ -56,7 +52,7 @@ public class MapHandlerScript : MonoBehaviour {
         print("BuildMaterials");
                 
         tileParent = new GameObject("Tiles");
-        UseParent( playParent, tileParent );
+        UseParent( gameObject, tileParent );
 
         sprites  = Resources.LoadAll<Sprite>("TileStone2");
         materials = new Material[ sprites.Length ];
@@ -67,11 +63,6 @@ public class MapHandlerScript : MonoBehaviour {
             Sprite sprite = sprites[ix];
             materials[ix] = MaterialFromSprite( sprite );
 
-            //GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //tile.transform.position = new Vector3( GlobalValues.TILE_X_LOC, GlobalValues.TILE_Y_LOC, 0);
-            //UseParent( tileParent, tile );
-            //tile.GetComponent<MeshRenderer>().material =  materials[ix];
-            //tiles[ix] = tile;
         }
 
 	}
@@ -133,7 +124,7 @@ print("DRAW LEVEL="+level);
 
 
         levelParent = new GameObject("Level");
-        levelParent.transform.parent = playParent.transform;
+        UseParent( gameObject, levelParent );
 
         // center
         Vector2 c = new Vector2( level.Wide/2f, level.Tall/2f );
@@ -148,7 +139,7 @@ print("DRAW LEVEL="+level);
                 //GameObject tile = Instantiate( tiles[tileId] );
                 GameObject tile =  GameObject.CreatePrimitive(PrimitiveType.Cube);
                 tile.name = "Cube("+ix+","+iy+")";
-                tile.transform.parent = levelParent.transform;
+                UseParent( levelParent, tile );
                 tile.GetComponent<MeshRenderer>().material = materials[tileId];
 
                 // add tile script with  reference information
@@ -175,7 +166,7 @@ print("DRAW LEVEL="+level);
 
         floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
         floor.name = "Floor";
-		UnityTools.UseParent( playParent, floor );
+		UseParent( gameObject, floor );
 
         floor.transform.localScale = new Vector3( w-SLIGHTLY_SMALLER, t-SLIGHTLY_SMALLER, 0.1f );
         floor.transform.localPosition = new Vector3( 0, 0, 0.05f );
@@ -186,46 +177,11 @@ print("DRAW LEVEL="+level);
 //=======================================================================================================================
 
     public void AddRowToMap() {
-        print("Add Row To Map");
+        print(">>>>>>>>>>>>>>>>>>>>>> Add Row To Map");
 	}
 
     public void CutRowFromMap() {
-        print("Cut Row From Map");
+        print(">>>>>>>>>>>>>>>>>>>>>> Cut Row From Map");
 	}
-//=======================================================================================================================
-
-    Sprite TakePicture( string prefabPath ) {
-
-        //GameObject target = Resources.Load<GameObject>( prefabPath );
-        GameObject target = GameObject.Find("Amber Pawn");
-print("Target="+target);
-//print("Bounds="+target.GetComponent<Renderer>().bounds);
-        //Instantiate(target, new Vector3(0, 5, 0), Quaternion.identity);
-
-		Camera Cam = GameObject.Find("Second Camera").GetComponent<Camera>();
-		//Camera Cam = GameObject.FindWithTag("SecondCamera").GetComponent<Camera>();
-print("CAM="+Cam);
-
-        // point camera at pawn
-        var point = target.GetComponent<Renderer>().bounds.center;
-		Cam.transform.position = new Vector3(point.x, point.y, point.z - 1.5f);
-		//Cam.transform.position = new Vector3( start.x, start.y, start.z );
-print("Texture="+Cam.targetTexture);
-
-        // take picture
-        int wide=256, tall=256;
-        Rect rect = new Rect(0,0,wide,tall);
-        Cam.targetTexture = new RenderTexture(wide,tall,16);
-        Cam.Render();
-
-        // copy from active texture to image
-        Texture2D Image = new Texture2D(wide,tall);
-        RenderTexture.active = Cam.targetTexture;
-        Image.ReadPixels(rect, 0, 0);
-        Image.Apply();
- 
-        // return as sprite
-        return Sprite.Create( Image, rect, new Vector2(0,0) );
-    }
 
 }

@@ -12,9 +12,10 @@ using Shared;
 
 /// <summary>
 /// NOTE: this is currently disabled, not used.
-/// This USED to have control a hovering cursor.  That cursoor functions moved to EditToolsScript.
+/// This provides an example of a hovering cursor.  
+/// The cursor functions have moved to EditToolsScript.
 /// </summary>
-public class ArenaHandler : MonoBehaviour {
+public class HoverMouseScript : MonoBehaviour {
 
     public GameObject cursor;
     public float cursorHover;
