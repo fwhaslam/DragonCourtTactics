@@ -7599,7 +7599,7 @@ GameObject:
   - component: {fileID: 1919709648}
   - component: {fileID: 1919709647}
   m_Layer: 5
-  m_Name: Title
+  m_Name: MapTitleLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

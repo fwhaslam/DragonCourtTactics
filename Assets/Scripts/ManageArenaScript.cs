@@ -1,5 +1,7 @@
 
 using Realm;
+using Realm.Enums;
+
 using Shared;
 using System;
 using UnityEngine;
@@ -12,8 +14,6 @@ using static Shared.UnityTools;
 /// </summary>
 public class ManageArenaScript : MonoBehaviour {
 
-    static public ManageArenaScript instance;
-
     public Material pit,wall,hidden;
 
     internal GameObject tileParent,levelParent;
@@ -21,18 +21,42 @@ public class ManageArenaScript : MonoBehaviour {
     internal Sprite[] sprites;
     internal Material[] materials;
 
+    //internal LevelMap currentMap;
+    
+    // map needs to redraw event
+    internal static UnityEvent<LevelMap> mapRedrawEvent = new UnityEvent<LevelMap>();
+
+    static public ManageArenaScript instance;
 
     /// <summary>
     /// Start is called before the first frame update
     /// </summary>
     void Start() {
 
-        if (instance!=null) throw new ApplicationException("Cannot instantiate ArenaHandlerScript twice.");
-        instance = this;
+		if (instance != null) throw new ApplicationException("Cannot instantiate ArenaHandlerScript twice.");
+		instance = this;
 
+		mapRedrawEvent.AddListener( MapRedrawFunction );
+
+        currentMap = PrepareLevel();
         BuildMaterials();
-        BuildLevel();
+        BuildLevel( currentMap );
 
+
+	}
+
+    /// <summary>
+    /// Add self as Event Listener
+    /// </summary>
+	public void OnEnable() {
+        mapRedrawEvent.AddListener( MapRedrawFunction );
+	}
+
+    /// <summary>
+    /// Remove self as Event Listener
+    /// </summary>
+	public void OnDisable() {
+        mapRedrawEvent.RemoveListener( MapRedrawFunction );
 	}
 
     /// <summary>
@@ -102,22 +126,47 @@ public class ManageArenaScript : MonoBehaviour {
     }
     
 //=======================================================================================================================
-   
+
+    /// <summary>
+    /// Proxy to Global values.
+    /// </summary>
+    public LevelMap currentMap {
+        get => GlobalValues.currentMap;
+        set { GlobalValues.currentMap = value; }
+    }
+
+    internal LevelMap PrepareLevel() {
+
+
+        if (currentMap==null) {
+print("Creating New Map");
+            currentMap = RealmFactory.SimpleTerrain( 15, 15 );
+        }
+
+        return currentMap;
+	}
+
+    /// <summary>
+    /// Delegate for global map redraw events.
+    /// </summary>
+    public void MapRedrawFunction(LevelMap level) {
+
+        print("BAD FRED!  Come back here and reuse these things!");
+        if (levelParent!=null) { 
+            Destroy( levelParent.gameObject );
+        }
+
+        // and away we go!
+        BuildLevel( level );
+
+	}    
+    
+    
     /// <summary>
     /// Use Map from Realm to build a local model using Tile Templates ( eg. cubes )
     /// </summary>
-    internal void BuildLevel() {
+    internal void BuildLevel( LevelMap level ) {
 
-print("Build Level");
-
-        LevelMap level = GlobalValues.currentMap;
-        if (level==null) {
-
-print("Build Level");
-
-            level = RealmFactory.SimpleTerrain( 15, 15 );
-            GlobalValues.currentMap = level;
-        }
 print("DRAW LEVEL="+level);
                 
         BuildFloor( level.Wide, level.Tall );
@@ -125,6 +174,11 @@ print("DRAW LEVEL="+level);
 
         levelParent = new GameObject("Level");
         UseParent( gameObject, levelParent );
+
+        RedrawMap( level );
+    }
+
+    internal void RedrawMap( LevelMap level ) {
 
         // center
         Vector2 c = new Vector2( level.Wide/2f, level.Tall/2f );
@@ -153,6 +207,7 @@ print("DRAW LEVEL="+level);
 		}
 	}
 
+
     static readonly float SLIGHTLY_SMALLER = 0.001f;
 
     /// <summary>
@@ -176,12 +231,36 @@ print("DRAW LEVEL="+level);
 
 //=======================================================================================================================
 
+    static readonly int DIR_OFFSET = 4;
+
+    internal DirEnum FindCameraDirection() {
+        
+        float angle = Camera.main.transform.eulerAngles.z;
+print("CAMERA="+angle);
+
+        int pick = (int)( MathTools.Modulus( angle, 360 ) / 90 );
+        DirEnum dir = (DirEnum) (( 2 * pick + DIR_OFFSET ) % 8);
+		print("DIR=" + dir.ToString());
+
+		return dir;
+	}
+
     public void AddRowToMap() {
         print(">>>>>>>>>>>>>>>>>>>>>> Add Row To Map");
+
+        DirEnum dir = FindCameraDirection();
+
+        currentMap.AddRow( dir );
+        mapRedrawEvent.Invoke( currentMap );
 	}
 
     public void CutRowFromMap() {
         print(">>>>>>>>>>>>>>>>>>>>>> Cut Row From Map");
-	}
+
+        DirEnum dir = FindCameraDirection();
+
+        currentMap.DropRow( dir );
+        mapRedrawEvent.Invoke( currentMap );
+    }
 
 }

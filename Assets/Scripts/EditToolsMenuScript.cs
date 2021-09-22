@@ -26,12 +26,10 @@ public class EditToolsMenuScript : MonoBehaviour {
 
 	internal GameObject workingTile;
     internal TMP_Dropdown optionMenu, heightMenu, flagMenu, agentMenu ;
+    internal TMP_Text mapSizeLabel,mapTitleLabel;
 
     // single tile change event
     internal static UnityEvent<GameObject> tileSelectEvent = new UnityEvent<GameObject>();
-
-    // map needs to redraw event
-    internal static UnityEvent mapRedrawEvent = new UnityEvent();
 
 
 	// Start is called before the first frame update
@@ -41,6 +39,9 @@ public class EditToolsMenuScript : MonoBehaviour {
 		heightMenu = GameObject.Find("HeightPicker").GetComponent<TMP_Dropdown>();
         flagMenu = GameObject.Find("FlagPicker").GetComponent<TMP_Dropdown>();
         agentMenu = GameObject.Find("AgentPicker").GetComponent<TMP_Dropdown>();
+
+        mapSizeLabel = GameObject.Find("MapSizeLabel").GetComponent<TMP_Text>();
+        mapTitleLabel = GameObject.Find("MapTitleLabel").GetComponent<TMP_Text>();
 
 		// fill in options on menus
 		heightMenu.ClearOptions();
@@ -71,7 +72,7 @@ public class EditToolsMenuScript : MonoBehaviour {
     /// </summary>
 	public void OnEnable() {
 	    tileSelectEvent.AddListener( TileEventFunction );	 
-        mapRedrawEvent.AddListener( MapRedrawFunction );
+        ManageArenaScript.mapRedrawEvent.AddListener( MapRedrawFunction );
 	}
 
     /// <summary>
@@ -79,7 +80,7 @@ public class EditToolsMenuScript : MonoBehaviour {
     /// </summary>
 	public void OnDisable() {
         tileSelectEvent.RemoveListener( TileEventFunction );
-        mapRedrawEvent.RemoveListener( MapRedrawFunction );
+        ManageArenaScript.mapRedrawEvent.RemoveListener( MapRedrawFunction );
 	}
 
     /// <summary>
@@ -93,12 +94,16 @@ public class EditToolsMenuScript : MonoBehaviour {
     /// <summary>
     /// Delegate for map redraw events.
     /// </summary>
-    public void MapRedrawFunction() {
+    public void MapRedrawFunction(LevelMap level) {
         print("Map Redraw Function ");
+
+        mapTitleLabel.text = "Editing ("+level.Title+")";
+
+
 	}
 
     public void TileDragFunction( Vector3 delta ) {
-        print("Tile Drag = "+delta);
+        //print("Tile Drag = "+delta);
 	}
     
 //======================================================================================================================

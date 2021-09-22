@@ -6,7 +6,7 @@ namespace Shared {
 	
 	using Realm;
 
-	static public class GlobalValues { 
+	static public class GlobalValues {
 
 		// current map for editing or play
 		static public LevelMap currentMap;
