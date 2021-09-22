@@ -3711,6 +3711,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickerButton: {fileID: 474018942}
   animatorOwner: {fileID: 1037774057}
+  animBoolKey: OpenSizePanel
 --- !u!1 &952902701
 GameObject:
   m_ObjectHideFlags: 0

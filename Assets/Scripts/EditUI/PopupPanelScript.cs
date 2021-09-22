@@ -23,6 +23,7 @@ namespace EditUI {
 
 		public GameObject pickerButton;
 		public GameObject animatorOwner;
+		public string animBoolKey;
 
 		internal Camera viewCam;
 		internal RectTransform panelRect;
@@ -30,7 +31,7 @@ namespace EditUI {
 		internal Animator showHideAnim;
 
 		internal int mark = 0;
-		internal readonly string ANIM_KEY = "OpenSizePanel";
+
 
 		/// <summary>
 		/// Called just before object is instantiated.
@@ -85,7 +86,7 @@ namespace EditUI {
 //======================================================================================================================
 
 		internal bool IsShowing() {
-			return showHideAnim.GetBool(ANIM_KEY);
+			return showHideAnim.GetBool(animBoolKey);
 		}
 
 		public void Show() {
@@ -95,7 +96,7 @@ namespace EditUI {
 			//transform.position = pickerButton.transform.position;
 			//gameObject.SetActive(true);
 
-			showHideAnim.SetBool( ANIM_KEY, true );
+			showHideAnim.SetBool( animBoolKey, true );
 			UnityTools.SetSelected( gameObject );
 		}
 
@@ -105,7 +106,7 @@ namespace EditUI {
 
 			//gameObject.SetActive(false);
 
-			showHideAnim.SetBool( ANIM_KEY, false );
+			showHideAnim.SetBool( animBoolKey, false );
 			UnityTools.SetSelected( null );			// ??
 		}
 	}
