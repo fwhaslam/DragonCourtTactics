@@ -22,12 +22,15 @@ namespace EditUI {
 	public class PopupPanelScript : MonoBehaviour, IDeselectHandler {	//, IPointerClickHandler, ISelectHandler
 
 		public GameObject pickerButton;
+		public GameObject animatorOwner;
 
 		internal Camera viewCam;
 		internal RectTransform panelRect;
 		internal GameObject addIcon, cutIcon;
+		internal Animator showHideAnim;
 
 		internal int mark = 0;
+		internal readonly string ANIM_KEY = "OpenSizePanel";
 
 		/// <summary>
 		/// Called just before object is instantiated.
@@ -37,14 +40,12 @@ namespace EditUI {
 
 			viewCam = GameObject.Find("UI Camera").GetComponent<Camera>();
 			panelRect = GetComponent<RectTransform>();
+			showHideAnim = animatorOwner.GetComponent<Animator>();
 
 			addIcon = GameObject.Find("AddRowIcon");
 			cutIcon = GameObject.Find("CutRowIcon");
 
-			Hide();
 		}
-
-		internal bool IsActive() { return gameObject.activeSelf; }
 
 		/// <summary>
 		/// When the deselect occurs in picker or panel, ignore it and wait for button events.
@@ -72,7 +73,7 @@ namespace EditUI {
 		public void PickerButtonClicked() {
 //print(">>>> Size Picker Clicked showing?="+IsActive()+"   mark="+(++mark) );
 
-			if (!IsActive()) {
+			if (!IsShowing()) {
 				Show();
 			}
 			else {
@@ -83,20 +84,29 @@ namespace EditUI {
 
 //======================================================================================================================
 
+		internal bool IsShowing() {
+			return showHideAnim.GetBool(ANIM_KEY);
+		}
+
 		public void Show() {
 
-			if (IsActive()) return;
+			if (IsShowing()) return;
 
-			transform.position = pickerButton.transform.position;
-			gameObject.SetActive(true);
+			//transform.position = pickerButton.transform.position;
+			//gameObject.SetActive(true);
+
+			showHideAnim.SetBool( ANIM_KEY, true );
 			UnityTools.SetSelected( gameObject );
 		}
 
 		public void Hide() {
 
-			if (!IsActive()) return;
+			if (!IsShowing()) return;
 
-			gameObject.SetActive(false);
+			//gameObject.SetActive(false);
+
+			showHideAnim.SetBool( ANIM_KEY, false );
+			UnityTools.SetSelected( null );			// ??
 		}
 	}
 
