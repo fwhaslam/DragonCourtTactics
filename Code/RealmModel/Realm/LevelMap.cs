@@ -12,6 +12,7 @@ namespace Realm {
 	using System.Linq;
 
 	using static Realm.Tools.MapTools;
+	using System.Text;
 
 	/// <summary>
 	/// Representation of the play region.  Always a rectangle.
@@ -27,6 +28,9 @@ namespace Realm {
 
 			var work = new LevelMap();
 			
+			work.Title = "Empty Map";
+			work.Info = null;
+
 			work.Wide = w;
 			work.Tall = t;
 
@@ -42,6 +46,36 @@ namespace Realm {
 		}
 
 //======================================================================================================================
+
+		public string ToDisplay() {
+
+			StringBuilder buf = new StringBuilder();
+
+			buf.Append("Title: "+Title+"\n");
+			buf.Append("Info: "+Info+"\n");
+			buf.Append("Size: "+Wide+","+Tall+"\n");
+
+			for (int dt=0;dt<Tall;dt++) {
+				buf.Append(":: ");
+				for (int dw = 0; dw < Wide; dw++) {
+					Place place = Places[dw, dt];
+					buf.Append( HeightChar[(int)place.Height] );
+					buf.Append( place.Agent==null ? '_' : place.Agent.ToString()[0] );
+					buf.Append( place.Flag==FlagEnum.None ? ' ' : place.Flag.ToString()[0] );
+				}
+				buf.Append("\n");
+			}
+
+			return buf.ToString();
+		}
+
+		static readonly char[] HeightChar = {'P','1','2','3','4','W'};
+
+//======================================================================================================================
+
+		public String Title {  get; set; }
+
+		public string Info {  get; set; }
 
 		public int Wide { get; internal set; }
 
@@ -118,8 +152,17 @@ namespace Realm {
 			LevelMap temp = LevelMap.Allocate( nw, nt );
 			for ( int wx=0;wx<ow;wx++ ) {
 				for (int tx=0;tx<ot;tx++) {
-					temp.Places[ wx+sw, tx+st ] = Places[ wx, tx ];
+					if (wx+sw<Wide || tx+st<Tall) {
+						temp.Places[ wx+sw, tx+st ] = Places[ wx, tx ];
+					}
 				}
+			}
+			
+			// shift some agents
+			foreach (var who in Agents.ToList()) { 
+				who.Where.X += sw;
+				who.Where.Y += st;
+Console.Out.WriteLine("AGENT AT ="+who.Where );
 			}
 
 			// copy over
@@ -146,31 +189,35 @@ namespace Realm {
 					break;			
 				case DirEnum.South:  // tall zero
 					nt--;
-					st = 1;
+					st = -1;
 					break;				
 				case DirEnum.East:  // wide top
 					nw--;
 					break;
 				case DirEnum.West:  // wide zero
 					nw--;
-					sw = 1;
+					sw = -1;
 					break;	
 				default:
-					throw new ArgumentException( "Can only use orthogonal directions to add a row" );
+					throw new ArgumentException( "Can only use orthogonal directions to cut a row" );
 			}
 
 			// copy old Places into new Places
 			LevelMap temp = LevelMap.Allocate( nw, nt );
+Console.Out.WriteLine("   sw="+sw+"  st="+st );
 			for ( int wx=0;wx<nw;wx++ ) {
 				for (int tx=0;tx<nt;tx++) {
-					temp.Places[ wx, tx ] = Places[ wx-sw, tx-st ] ;
+					if (wx-sw>=0 && tx-st>=0) { 
+						temp.Places[ wx, tx ] = Places[ wx-sw, tx-st ] ;
+					}
 				}
 			}
 
 			// remove dropped agents
 			foreach (var who in Agents.ToList()) { 
-				who.Where.X -= sw;
-				who.Where.Y -= st;
+				who.Where.X += sw;
+				who.Where.Y += st;
+Console.Out.WriteLine("AGENT AT ="+who.Where );
 				// new spot is out of bounds
 				if (who.Where.X>=nw || who.Where.Y>=nt || who.Where.X<0 || who.Where.Y<0 ) {
 					Agents.Remove(who);

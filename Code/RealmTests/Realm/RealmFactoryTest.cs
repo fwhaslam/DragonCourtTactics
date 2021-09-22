@@ -17,6 +17,9 @@ namespace Realm {
 			var result = RealmFactory.SimpleTerrain( 10, 12 );
 
 			// assertions
+			AreEqual( "Empty Map", result.Title );
+			IsNull( result.Info );
+
 			AreEqual( 10, result.Places.GetLength(0) );
 			AreEqual( 12, result.Places.GetLength(1) );
 

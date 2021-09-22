@@ -23,6 +23,9 @@ namespace Realm.Tools {
 			this.Y = src.Y;
 		}
 
+		override public string ToString() { return "Where("+X+","+Y+")";}
+
+
 		public Where Set( int x, int y ) {
 			this.X = x;
 			this.Y = y;
