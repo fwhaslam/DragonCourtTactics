@@ -14,6 +14,8 @@ using static Shared.UnityTools;
 
 public class TileScript : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
+    public ManageArenaScript owner;
+
     internal GameObject token;
 
     // Start is called before the first frame update
@@ -75,13 +77,12 @@ public class TileScript : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
 print(">>>>>>>>>>>>>>>> CREATING AGENT ===== at"+this.name);
 
 				token = Instantiate(Resources.Load("_prefabs/GoodToken") as GameObject);
-				//GameObject basis = GameObject.Find("GoodToken");
-				//token = GameObject.Instantiate( basis );
 				token.transform.localPosition = new Vector3( VLOC.x+0.5f, VLOC.y+0.5f, top+0.5f );
                 token.SetActive( true );
 
                 // TODO: create an 'agent pool'
-                UseParent( ManageArenaScript.instance.gameObject, token );
+                UseParent( owner.tokenParent, token );
+                //UseParent( ManageArenaScript.instance.gameObject, token );
 
                 // TODO: add decal for type
             }

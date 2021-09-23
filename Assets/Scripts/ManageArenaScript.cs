@@ -16,7 +16,7 @@ public class ManageArenaScript : MonoBehaviour {
 
     public Material pit,wall,hidden;
 
-    internal GameObject tileParent,levelParent;
+    internal GameObject tileParent,levelParent,tokenParent;
     internal GameObject floor;
     internal Sprite[] sprites;
     internal Material[] materials;
@@ -40,9 +40,9 @@ public class ManageArenaScript : MonoBehaviour {
 
         currentMap = PrepareLevel();
         BuildMaterials();
-        BuildLevel( currentMap );
 
-
+        //BuildLevel( currentMap );
+        mapRedrawEvent.Invoke( currentMap );
 	}
 
     /// <summary>
@@ -153,7 +153,10 @@ print("Creating New Map");
 
         print("BAD FRED!  Come back here and reuse these things!");
         if (levelParent!=null) { 
-            Destroy( levelParent.gameObject );
+            Destroy( levelParent );
+            Destroy( tokenParent );
+            Destroy( tileParent );
+            Destroy( floor );
         }
 
         // and away we go!
@@ -171,9 +174,10 @@ print("DRAW LEVEL="+level);
                 
         BuildFloor( level.Wide, level.Tall );
 
-
         levelParent = new GameObject("Level");
         UseParent( gameObject, levelParent );
+        tokenParent = new GameObject("Tokens");
+        UseParent( gameObject, tokenParent );
 
         RedrawMap( level );
     }
@@ -198,6 +202,7 @@ print("DRAW LEVEL="+level);
 
                 // add tile script with  reference information
 				TileScript info = tile.AddComponent<TileScript>();
+                info.owner = this;
 				info.SetRef( ix, iy, c.x-ix, c.y-iy, materials[tileId] );
 
                 // cleanup
@@ -216,8 +221,6 @@ print("DRAW LEVEL="+level);
     /// <param name="w"></param>
     /// <param name="t"></param>
     internal void BuildFloor( int w, int t) {
-
-        if (floor!=null) return;
 
         floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
         floor.name = "Floor";

@@ -31,17 +31,37 @@ public class EditToolsMenuScript : MonoBehaviour {
     // single tile change event
     internal static UnityEvent<GameObject> tileSelectEvent = new UnityEvent<GameObject>();
 
+	// Awake is called before OnEnable ( which is before Start )
+	public void Awake() {
+        
+        mapSizeLabel = GameObject.Find("MapSizeLabel").GetComponent<TMP_Text>();
+        mapTitleLabel = GameObject.Find("MapTitleLabel").GetComponent<TMP_Text>();
 
-	// Start is called before the first frame update
+    }
+    
+    /// <summary>
+    /// Add self as Event Listener
+    /// </summary>
+	public void OnEnable() {
+	    tileSelectEvent.AddListener( TileEventFunction );	 
+        ManageArenaScript.mapRedrawEvent.AddListener( MapRedrawFunction );
+	}
+
+    /// <summary>
+    /// Remove self as Event Listener
+    /// </summary>
+	public void OnDisable() {
+        tileSelectEvent.RemoveListener( TileEventFunction );
+        ManageArenaScript.mapRedrawEvent.RemoveListener( MapRedrawFunction );
+	}
+
+	// Start is called after Awake/Enable, but before any Update
 	public void Start() {
 
-        optionMenu = GameObject.Find("OptionPicker").GetComponent<TMP_Dropdown>();
+	    optionMenu = GameObject.Find("OptionPicker").GetComponent<TMP_Dropdown>();
 		heightMenu = GameObject.Find("HeightPicker").GetComponent<TMP_Dropdown>();
         flagMenu = GameObject.Find("FlagPicker").GetComponent<TMP_Dropdown>();
         agentMenu = GameObject.Find("AgentPicker").GetComponent<TMP_Dropdown>();
-
-        mapSizeLabel = GameObject.Find("MapSizeLabel").GetComponent<TMP_Text>();
-        mapTitleLabel = GameObject.Find("MapTitleLabel").GetComponent<TMP_Text>();
 
 		// fill in options on menus
 		heightMenu.ClearOptions();
@@ -60,28 +80,7 @@ public class EditToolsMenuScript : MonoBehaviour {
         agentMenu.onValueChanged.AddListener(delegate {DoChangeAgent();});
 	}
 
-	// Update is called once per frame
-	public void Update() {
-
-    }
-
 //======================================================================================================================
-
-    /// <summary>
-    /// Add self as Event Listener
-    /// </summary>
-	public void OnEnable() {
-	    tileSelectEvent.AddListener( TileEventFunction );	 
-        ManageArenaScript.mapRedrawEvent.AddListener( MapRedrawFunction );
-	}
-
-    /// <summary>
-    /// Remove self as Event Listener
-    /// </summary>
-	public void OnDisable() {
-        tileSelectEvent.RemoveListener( TileEventFunction );
-        ManageArenaScript.mapRedrawEvent.RemoveListener( MapRedrawFunction );
-	}
 
     /// <summary>
     /// Delegate for TileEvent.
@@ -95,10 +94,10 @@ public class EditToolsMenuScript : MonoBehaviour {
     /// Delegate for map redraw events.
     /// </summary>
     public void MapRedrawFunction(LevelMap level) {
-        print("Map Redraw Function ");
+        print("  ### ### ### ### EditToolsMenu => Map Redraw Function ");
 
         mapTitleLabel.text = "Editing ("+level.Title+")";
-
+        mapSizeLabel.text = "Size: "+level.Wide+" x "+level.Tall;
 
 	}
 
