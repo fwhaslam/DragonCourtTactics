@@ -1,3 +1,6 @@
+//
+//	Copyright 2021 Frederick William Haslam born 1962 in the USA
+//
 
 using Shared;
 

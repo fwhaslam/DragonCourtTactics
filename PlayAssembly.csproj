@@ -62,12 +62,12 @@
     <Compile Include="Assets\Scripts\SpinObject.cs" />
     <Compile Include="Assets\Scripts\EditToolsMenuScript.cs" />
     <Compile Include="Assets\Scripts\MainCameraHandler.cs" />
-    <Compile Include="Assets\Scripts\TileScript.cs" />
+    <Compile Include="Assets\Scripts\Arena\TileScript.cs" />
     <Compile Include="Assets\Scripts\Shared\GlobalValues.cs" />
     <Compile Include="Assets\Scripts\Examples\HoverMouseScript.cs" />
     <Compile Include="Assets\Scripts\Shared\Touchable.cs" />
-    <Compile Include="Assets\Scripts\ManageArenaScript.cs" />
     <Compile Include="Assets\Scripts\Shared\UnityTools.cs" />
+    <Compile Include="Assets\Scripts\Arena\ArenaManagerScript.cs" />
     <Compile Include="Assets\Scripts\GameHandlerScript.cs" />
     <Compile Include="Assets\Scripts\Shared\MathTools.cs" />
   </ItemGroup>

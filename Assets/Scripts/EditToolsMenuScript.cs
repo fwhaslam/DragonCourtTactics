@@ -1,3 +1,8 @@
+//
+//	Copyright 2021 Frederick William Haslam born 1962 in the USA
+//
+
+using Arena;
 
 using Realm;
 using Realm.Enums;
@@ -44,7 +49,7 @@ public class EditToolsMenuScript : MonoBehaviour {
     /// </summary>
 	public void OnEnable() {
 	    tileSelectEvent.AddListener( TileEventFunction );	 
-        ManageArenaScript.mapRedrawEvent.AddListener( MapRedrawFunction );
+        ArenaManagerScript.mapRedrawEvent.AddListener( MapRedrawFunction );
 	}
 
     /// <summary>
@@ -52,7 +57,7 @@ public class EditToolsMenuScript : MonoBehaviour {
     /// </summary>
 	public void OnDisable() {
         tileSelectEvent.RemoveListener( TileEventFunction );
-        ManageArenaScript.mapRedrawEvent.RemoveListener( MapRedrawFunction );
+        ArenaManagerScript.mapRedrawEvent.RemoveListener( MapRedrawFunction );
 	}
 
 	// Start is called after Awake/Enable, but before any Update
