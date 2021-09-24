@@ -1,8 +1,8 @@
 //
-//  Handler form Edit Arena
+//	Copyright 2021 Frederick William Haslam born 1962 in the USA
 //
 
-// as of Unity 2021.1.9f1 there is a bug where Input.mousePosition does not update
+// as of Unity 2021.1.9f1 there is a bug where Input.mousePosition does not Update without a click
 #define USE_WORKAROUND_FOR_MOUSE_POSITION
 
 using System.Collections;

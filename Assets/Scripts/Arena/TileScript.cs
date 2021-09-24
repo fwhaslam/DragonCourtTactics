@@ -32,12 +32,6 @@ namespace Arena {
             token = null;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
-    
 	    public void OnPointerDown(PointerEventData eventData) {
     //print("CLICKED=="+transform.name);
 		    EditToolsMenuScript.SelectTile( gameObject );
@@ -87,6 +81,14 @@ namespace Arena {
 
 				    token = Instantiate(Resources.Load("_prefabs/GoodToken") as GameObject);
 				    token.transform.localPosition = new Vector3( VLOC.x+0.5f, VLOC.y+0.5f, top );
+
+                    Material material = (Material)Resources.Load("Materials/ImageToken",typeof(Material));
+                    material.SetColor( "Background", new Color( 1, 0.80f, 0.75f ) );
+                    Texture orcFigure = (Texture)Resources.Load("Unpaid/Orc",typeof(Texture));
+print("Figure="+orcFigure);
+                    material.SetTexture("Figure", orcFigure );
+                    token.GetComponent<Renderer>().material = material;
+
                     token.SetActive( true );
 
                     // TODO: create an 'agent pool'

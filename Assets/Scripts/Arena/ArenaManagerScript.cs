@@ -64,13 +64,6 @@ namespace Arena {
             mapRedrawEvent.RemoveListener( MapRedrawFunction );
 	    }
 
-        /// <summary>
-        /// Update is called once per frame
-        /// </summary>
-        public void Update() {
-
-	    }
-
     //=======================================================================================================================
 
         /// <summary>
