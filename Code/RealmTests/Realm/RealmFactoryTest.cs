@@ -18,7 +18,7 @@ namespace Realm {
 
 			// assertions
 			AreEqual( "Empty Map", result.Title );
-			IsNull( result.Info );
+			IsNull( result.Image );
 
 			AreEqual( 10, result.Places.GetLength(0) );
 			AreEqual( 12, result.Places.GetLength(1) );

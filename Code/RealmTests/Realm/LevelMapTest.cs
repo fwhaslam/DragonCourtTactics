@@ -20,6 +20,10 @@ namespace Realm {
 	[TestClass]
 	public class LevelMapTest {
 
+		public void DisplayMap(LevelMap map) {
+			Console.Out.WriteLine(RealmManager.DumpLevelMap(map));
+		}
+
 		public LevelMap CheckMap() {
 			var map = LevelMap.Allocate( 5, 5 );
 
@@ -38,7 +42,7 @@ namespace Realm {
 
 			// assertions
 			AreEqual( "Empty Map", result.Title );
-			IsNull( result.Info );
+			IsNull( result.Image );
 
 			AreEqual( 10, result.Places.GetLength(0) );
 			AreEqual( 12, result.Places.GetLength(1) );
@@ -48,26 +52,6 @@ namespace Realm {
 
 			IsNull( result.Places[0,0].Agent );
 			AreEqual( 0, result.Agents.Count );
-		}
-		
-		[TestMethod]
-		public void ToDisplay() {
-
-			var map = CheckMap();
-
-			// invocation
-			string result = map.ToDisplay();
-
-			// assertions
-			AreEqual("Title: Empty Map\n" +
-				"Info: \n" +
-				"Size: 5,5\n" +
-				":: 1_ 1_ 1_ 1_ 1_ \n" +
-				":: 1_ 1_ 1_ 1_ 1_ \n" +
-				":: 1_ 1_ P_ 1_L1_ \n" +
-				":: 1_ 1_ 1R 1_ 1_ \n" +
-				":: 1_ 1_ 1_ 1_ 1_ \n" +
-				"", result );
 		}
 
 //======================================================================================================================
@@ -79,11 +63,11 @@ namespace Realm {
 
 			// invocation
 			map.DropRow( DirEnum.North );
-//Console.Out.WriteLine( map.ToDisplay() );
+DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Info );
+			IsNull( map.Image );
 
 			AreEqual( 5, map.Places.GetLength(0) );
 			AreEqual( 4, map.Places.GetLength(1) );
@@ -106,11 +90,11 @@ namespace Realm {
 
 			// invocation
 			map.DropRow( DirEnum.East );
-//Console.Out.WriteLine( map.ToDisplay() );
+//DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Info );
+			IsNull( map.Image );
 
 			AreEqual( 4, map.Places.GetLength(0) );
 			AreEqual( 5, map.Places.GetLength(1) );
@@ -133,11 +117,11 @@ namespace Realm {
 
 			// invocation
 			map.DropRow( DirEnum.South );
-//Console.Out.WriteLine( map.ToDisplay() );
+//DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Info );
+			IsNull( map.Image );
 
 			AreEqual( 5, map.Places.GetLength(0) );
 			AreEqual( 4, map.Places.GetLength(1) );
@@ -160,11 +144,11 @@ namespace Realm {
 
 			// invocation
 			map.DropRow( DirEnum.West );
-//Console.Out.WriteLine( map.ToDisplay() );
+//DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Info );
+			IsNull( map.Image );
 
 			AreEqual( 4, map.Places.GetLength(0) );
 			AreEqual( 5, map.Places.GetLength(1) );
@@ -189,11 +173,11 @@ namespace Realm {
 
 			// invocation
 			map.AddRow( DirEnum.North );
-Console.Out.WriteLine(map.ToDisplay());
+DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Info );
+			IsNull( map.Image );
 
 			AreEqual( 5, map.Places.GetLength(0) );
 			AreEqual( 6, map.Places.GetLength(1) );
@@ -216,11 +200,11 @@ Console.Out.WriteLine(map.ToDisplay());
 
 			// invocation
 			map.AddRow( DirEnum.East );
-Console.Out.WriteLine(map.ToDisplay());
+DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Info );
+			IsNull( map.Image );
 
 			AreEqual( 6, map.Places.GetLength(0) );
 			AreEqual( 5, map.Places.GetLength(1) );
@@ -243,11 +227,11 @@ Console.Out.WriteLine(map.ToDisplay());
 
 			// invocation
 			map.AddRow( DirEnum.South );
-Console.Out.WriteLine(map.ToDisplay());
+DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Info );
+			IsNull( map.Image );
 
 			AreEqual( 5, map.Places.GetLength(0) );
 			AreEqual( 6, map.Places.GetLength(1) );
@@ -270,11 +254,11 @@ Console.Out.WriteLine(map.ToDisplay());
 
 			// invocation
 			map.AddRow( DirEnum.West );
-Console.Out.WriteLine(map.ToDisplay());
+DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Info );
+			IsNull( map.Image );
 
 			AreEqual( 6, map.Places.GetLength(0) );
 			AreEqual( 5, map.Places.GetLength(1) );

@@ -7,6 +7,10 @@ namespace Realm {
 	using Realm.Enums;
 	using Realm.Tools;
 
+	using RealmModel.Realm.Enums;
+
+	using YamlDotNet.Serialization;
+
 	public class Agent {
  
 		public Agent(int  x,int y) {
@@ -20,14 +24,24 @@ namespace Realm {
 			this.Where = src.Where;
 			this.Type = src.Type;
 			this.Face = src.Face;
+			this.Faction = src.Faction;
 		}
 
-		public AgentType Type {  get; set; }
+		/// <summary>
+		/// Type is summarized to AgentType.Name
+		/// </summary>
+		[YamlIgnore]
+		public AgentType Type {  get; set; } = AgentType.PEASANT;
 
-		public DirEnum Face { get; set; }
+		public string Name { get => Type.Name; }
 
+		public DirEnum Face { get; set; } = DirEnum.North;
+
+		[YamlIgnore]
 		public Where Where { get; set; }
 
+		public StatusEnum Status {  get; set; } = StatusEnum.Alert;
 
+		public int Faction {  get; set; } = 0;
 	}
 }

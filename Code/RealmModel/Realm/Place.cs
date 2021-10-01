@@ -2,10 +2,9 @@
 //	Copyright 2021 Frederick William Haslam born 1962
 //
 
-
-
 namespace Realm {
 
+	using Realm.Enums;
 	using Realm.Tools;
 
 	/// <summary>
@@ -17,9 +16,6 @@ namespace Realm {
 
 		public Place( int x, int y) {
 			Where = new Where(x,y);
-			Height = HeightEnum.One;
-			Agent = null;
-			Flag = FlagEnum.None;
 		}
 
 		public Where Where { get; set; }
@@ -28,11 +24,11 @@ namespace Realm {
 
 		public int Y() { return Where.Y; }
 
-		public HeightEnum Height { get; set; }
+		public HeightEnum Height { get; set; } = HeightEnum.One;
 
-		public FlagEnum Flag { get; set; }
+		public FlagEnum Flag { get; set; } = FlagEnum.None;
 
-		public Agent Agent { get; set; }
+		public Agent Agent { get; set; } = null;
 
 	}
 }

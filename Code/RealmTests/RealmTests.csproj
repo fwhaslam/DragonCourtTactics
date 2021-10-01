@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RealmModel\RealmModel.csproj" />
+    <!--<ProjectReference Include="..\..\..\..\..\Verbose\Verbose\Verbose.csproj" />-->
+    <!--<Content Include="lib\IncludedDLL.dll" />-->
   </ItemGroup>
 
 </Project>

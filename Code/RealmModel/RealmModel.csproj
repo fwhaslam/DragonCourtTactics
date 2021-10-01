@@ -2,11 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>net4.7.1</TargetFramework>
+    <ProjectName>RealmModel</ProjectName>
+    <Version>0.0.1</Version>
+    <Company>FredHaslam</Company>
+    <Product>FredHaslam</Product>
+    <!--<AssemblyName>$(ProjectName)_$(Version)</AssemblyName>-->
   </PropertyGroup>
-
+  
+  <ItemGroup>
+    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+    <PackageReference Include="YamlDotNet" Version="11.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+  
   <!-- in the Unity project, copy the RealmModel DLL up into Assets; otherwise ignore. -->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF exist  $(SolutionDir)Assets\_DLLs\ ( echo     Copying DLL from $(TargetDir) &#xD;&#xA;echo     into $(SolutionDir)Assets\DLLs&#xD;&#xA;copy $(TargetPath) $(SolutionDir)Assets\_DLLs\. ) ELSE ( echo     No Assets, DLL not copied )" />
+    <Exec Command="RealmModelPostBuild.bat $(SolutionDir) $(TargetDir)" IgnoreExitCode="true" />
   </Target>
-
+  
 </Project>

@@ -13,6 +13,7 @@ namespace Realm {
 
 	using static Realm.Tools.MapTools;
 	using System.Text;
+	using YamlDotNet.Serialization;
 
 	/// <summary>
 	/// Representation of the play region.  Always a rectangle.
@@ -22,6 +23,8 @@ namespace Realm {
 	/// </summary>
 	public class LevelMap {
 
+		internal Dictionary<string,string> textMap = new Dictionary<string, string>();
+
 		internal LevelMap() { }
 
 		static public LevelMap Allocate( int w, int t ) {
@@ -29,7 +32,8 @@ namespace Realm {
 			var work = new LevelMap();
 			
 			work.Title = "Empty Map";
-			work.Info = null;
+			work.Image = "pic1.png";
+			work.Text["Start"] = "Some Story";
 
 			work.Wide = w;
 			work.Tall = t;
@@ -47,43 +51,27 @@ namespace Realm {
 
 //======================================================================================================================
 
-		public string ToDisplay() {
+		public string Title {  get; set; }
 
-			StringBuilder buf = new StringBuilder();
-
-			buf.Append("Title: "+Title+"\n");
-			buf.Append("Info: "+Info+"\n");
-			buf.Append("Size: "+Wide+","+Tall+"\n");
-
-			for (int dt=0;dt<Tall;dt++) {
-				buf.Append(":: ");
-				for (int dw = 0; dw < Wide; dw++) {
-					Place place = Places[dw, dt];
-					buf.Append( HeightChar[(int)place.Height] );
-					buf.Append( place.Agent==null ? '_' : place.Agent.ToString()[0] );
-					buf.Append( place.Flag==FlagEnum.None ? ' ' : place.Flag.ToString()[0] );
-				}
-				buf.Append("\n");
-			}
-
-			return buf.ToString();
-		}
-
-		static readonly char[] HeightChar = {'P','1','2','3','4','W'};
-
-//======================================================================================================================
-
-		public String Title {  get; set; }
-
-		public string Info {  get; set; }
+		public string Image { get; set; }
 
 		public int Wide { get; internal set; }
 
 		public int Tall { get; internal set; }
-
+		
+		/// <summary>
+		/// Places become 'Map' for Yaml storage.
+		/// </summary>
+		[YamlIgnore]
 		public Place[,] Places { get; internal set; }
 
+		public List<string> Map { get => MapAsStrings(); set => StringsAsMap(value); }
+
 		public List<Agent> Agents { get; internal set; }
+
+		public Dictionary<string,string> Text {  get => textMap; set => textMap = value; }
+
+//======================================================================================================================
 
 		/// <summary>
 		/// Create an agent on the map, removing any in the way.
@@ -231,6 +219,46 @@ Console.Out.WriteLine("AGENT AT ="+who.Where );
 
 		}
 
-	}
+//======================================================================================================================
 
+		/// <summary>
+		/// String representation of the map.
+		/// </summary>
+		/// <returns></returns>
+		List<string> MapAsStrings() {
+						
+			StringBuilder buf = new StringBuilder();
+
+			List<string> list = new List<string>();
+			for (int dt=0;dt<Tall;dt++) {
+				buf.Clear();
+				for (int dw = 0; dw < Wide; dw++) {
+					if (dw>0) buf.Append("/");
+
+					Place place = Places[dw, dt];
+					buf.Append( HeightEnumTraits.Symbol( place.Height ));
+					buf.Append( FlagEnumTraits.Symbol( place.Flag ) );
+					if (place.Agent==null) {
+						buf.Append("__");
+					}
+					else { 
+						int indexOf = Agents.IndexOf( place.Agent );
+						buf.Append( indexOf.ToString("00"));
+					}
+				}
+				list.Add( buf.ToString() );
+			}
+			return list;
+		}
+	
+		/// <summary>
+		/// Use strings to reconstruct map.
+		/// </summary>
+		/// <param name="source"></param>
+		void StringsAsMap( List<string> source ) {
+
+		}
+
+
+	}
 }
