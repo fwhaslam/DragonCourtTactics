@@ -1,3 +1,9 @@
+20201-09-30
+==================
+Turns out there are a lot of DLLs which need to copy into the unity DLL folder.
+So I took it out of VCS again.  You will have to build the VS solution before
+the Unity project can work.
+
 20201-09-15
 ==================
 

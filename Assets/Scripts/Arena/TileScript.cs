@@ -6,14 +6,9 @@ namespace Arena {
 
     using Realm;
     using Realm.Enums;
-    using Realm.Tools;
-
-    using Shared;
-
-    using System.Collections;
-    using System.Collections.Generic;
     using UnityEngine;
-    using UnityEngine.EventSystems;
+	using UnityEngine.Events;
+	using UnityEngine.EventSystems;
 
     using static Shared.GlobalValues;
     using static Shared.UnityTools;
@@ -23,18 +18,21 @@ namespace Arena {
     /// </summary>
     public class TileScript : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
-        public ArenaManagerScript owner;
-
-        internal GameObject token;
+        internal GameObject token = null;
+        
+    // when a tile is dragged, move the camera :: function( V3 start, V3 delta )
+    static internal readonly UnityEvent<Vector3,Vector3> tileDragEvent = new UnityEvent<Vector3,Vector3>();
 
         // Start is called before the first frame update
         void Start() {
-            token = null;
         }
+
+//======================================================================================================================
+
 
 	    public void OnPointerDown(PointerEventData eventData) {
     //print("CLICKED=="+transform.name);
-		    EditToolsMenuScript.SelectTile( gameObject );
+		    EditToolsMenuScript.SelectTile( this );
 	    }
 
         public void TakeCursor( GameObject cursor ) {
@@ -44,73 +42,63 @@ namespace Arena {
 
             // approximate the 'top' of the object ( z coord )
             //var top = transform.lossyScale.z; 
-            var top = CalcZ( currentMap.Places[ MLOC.X, MLOC.Y ].Height );
+            var top = CalcZ( Place.Height );
 
             cursor.transform.position = new Vector3( where.x, where.y, top );
 
 	    }
 
+        public void RedrawSelectedTile( GameObject cursor ) {
+            RedrawTile();
+            TakeCursor( cursor );
+		}
+        
         public void RedrawTile() {
     //print("REDRAW="+name);
 
-            Place place = currentMap.Places[MLOC.X,MLOC.Y];
-            var flag = place.Flag;
+            var flag = Place.Flag;
 
             // change 'cube' size
-            var height = place.Height;
-            var top = CalcZ( height );
-            FixCube( height, top );
-
-		    Agent agent = place.Agent;
-
-            FixAgent( agent, top );
+            var top = CalcZ( Place.Height );
+            FixCube( Place.Height, top );
+            FixAgent( Place.Agent, top );
+            FixFlag( Place.Flag, top );
         }
 
         void FixAgent( Agent agent, float top ) {
 
-            // Agent found
-            if (agent!=null) { 
+            // null agent, hide token.
+            if (agent==null) {
+                if (token!=null && token.activeSelf) token.SetActive(false);
+                return;
+			}
 
-                // token exists
-                if (token!=null) {
-                    // no work
-                }
-                // create agent
-                else {
-    print(">>>>>>>>>>>>>>>> CREATING AGENT ===== at"+this.name);
-
-				    token = Instantiate(Resources.Load("_prefabs/GoodToken") as GameObject);
-				    token.transform.localPosition = new Vector3( VLOC.x+0.5f, VLOC.y+0.5f, top );
-
-                    Material material = (Material)Resources.Load("Materials/ImageToken",typeof(Material));
-                    material.SetColor( "Background", new Color( 1, 0.80f, 0.75f ) );
-                    Texture orcFigure = (Texture)Resources.Load("Unpaid/Orc",typeof(Texture));
-print("Figure="+orcFigure);
-                    material.SetTexture("Figure", orcFigure );
-                    token.GetComponent<Renderer>().material = material;
-
-                    token.SetActive( true );
-
-                    // TODO: create an 'agent pool'
-                    UseParent( owner.tokenParent, token );
-                    //UseParent( ManageArenaScript.instance.gameObject, token );
-
-                    // TODO: add decal for type
-                }
-		    }
-
-            // Agent not found
+            // create or find agent
             else {
+                
+print(">>>>>>>>>>>>>>>> BUILDING AGENT ===== at"+this.name);
 
-                // no token
                 if (token==null) {
-                    // no work
-                }
-                // hide token
-                else {
-                    token.SetActive(false);
-		        }
-            }
+                    token  = Instantiate(Resources.Load("_prefabs/GoodToken") as GameObject);
+				}
+
+				token.transform.localPosition = new Vector3( VLOC.x-0.5f, VLOC.y-0.5f, top );
+                token.transform.eulerAngles = new Vector3( 0f, 0f, ((int)agent.Face) * 45f );
+
+                // image
+                Material material = (Material)Resources.Load("Materials/ImageToken",typeof(Material));
+                material.SetColor( "Background", new Color( 1, 0.80f, 0.75f ) );
+                Texture orcFigure = (Texture)Resources.Load("Unpaid/Orc",typeof(Texture));
+
+                material.SetTexture("Figure", orcFigure );
+                token.GetComponent<Renderer>().material = material;
+
+                token.SetActive( true );
+
+                // TODO: create an 'agent pool'
+                UseParent( Owner.tokenParent, token );
+                
+		    }
 
 	    }
 
@@ -121,6 +109,10 @@ print("Figure="+orcFigure);
 
             GetComponent<MeshRenderer>().material =  PickMaterial( height );
 	    }
+
+        internal void FixFlag( FlagEnum flag, float top ) {
+            // TODO:
+		}
 
         internal float CalcZ( HeightEnum height ) {
             if (height==HeightEnum.Pit) return 0.2f;
@@ -137,16 +129,16 @@ print("Figure="+orcFigure);
     
     //======================================================================================================================
 
-        /// <summary>
-        /// Invoked by Dropdown Menu.
-        /// </summary>
-        public void SetHeight( int height ) {
-            currentMap.Places[ MLOC.X, MLOC.Y ].Height = (HeightEnum)height;
-            RedrawTile();
-	    }
+     //   /// <summary>
+     //   /// Invoked by Dropdown Menu.
+     //   /// </summary>
+     //   public void SetHeight( int height ) {
+     //       Place.Height = (HeightEnum)height;
+     //       RedrawTile();
+	    //}
 
         public void AddAgent( AgentType type, DirEnum face ) {
-            currentMap.AddAgent( type, MLOC, face );
+            currentMap.AddAgent( type, Place.Where, face );
             RedrawTile();
 	    }
     
@@ -160,14 +152,17 @@ print("Figure="+orcFigure);
         /// <param name="dx"></param>
         /// <param name="dy"></param>
         /// <param name="floor">default material when this cube is not pit nor wall.</param>
-        public void SetRef( int x, int y, float dx, float dy, Material floor ) {
-            this.MLOC = new Where( x, y );
+        public void SetRef( ArenaManagerScript owner, Place place, float dx, float dy, Material floor ) {
+            this.Owner = owner;
+            this.Place = place;
             this.VLOC = new Vector2( dx, dy );
             this.Floor = floor;
 	    }
 
+        public ArenaManagerScript Owner { get; internal set; }
+
         // location in map
-        public Where MLOC { get; internal set; }
+        public Place Place { get; internal set; }
 
         // center of tile in view
 	    public Vector2 VLOC { get; internal set; }
@@ -177,19 +172,24 @@ print("Figure="+orcFigure);
 
     //======================================================================================================================
 
+        internal Vector3 startDrag = Vector3.zero;
         internal Vector3 lastDrag = Vector3.zero;
 
 	    public void OnBeginDrag(PointerEventData eventData) {
 		    //print("Begin Drag = "+eventData );
+            startDrag = eventData.position;
             lastDrag = eventData.position;
 	    }
 
 	    public void OnDrag(PointerEventData eventData) {
+
 		    //print("On Drag = "+eventData );
             Vector3 next = eventData.position;
             Vector3 delta = next - lastDrag;
             lastDrag = next;
-            MainCameraHandler.TileDragged( delta );
+
+            // fire off event
+           tileDragEvent.Invoke( startDrag, delta );
 	    }
 
 	    public void OnEndDrag(PointerEventData eventData) {

@@ -24,6 +24,7 @@ TestResults/
 obj/
 bin/
 .vsconfig
+Assets/_DLLs/
 
 # ignoring auto-generate unity folders
 UIElementsSchema/

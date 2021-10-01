@@ -29,19 +29,27 @@ public class EditToolsMenuScript : MonoBehaviour {
 
     public GameObject cursor;
 
-	internal GameObject workingTile;
-    internal TMP_Dropdown optionMenu, heightMenu, flagMenu, agentMenu ;
-    internal TMP_Text mapSizeLabel,mapTitleLabel;
+	internal TileScript workingTile;
+    internal TMP_Dropdown optionMenu, flagMenu, agentMenu ;
+    internal TMP_Text mapTitleLabel,
+        mapSizeLabel,tileTypeLabel,tileFlagLabel,
+        unitTypeLabel,unitFaceLabel,unitGroupLabel;
 
     // single tile change event
-    internal static UnityEvent<GameObject> tileSelectEvent = new UnityEvent<GameObject>();
+    internal static UnityEvent<TileScript> tileSelectEvent = new UnityEvent<TileScript>();
 
 	// Awake is called before OnEnable ( which is before Start )
 	public void Awake() {
+
+        mapTitleLabel = GameObject.Find("MapTitleLabel").GetComponent<TMP_Text>();
         
         mapSizeLabel = GameObject.Find("MapSizeLabel").GetComponent<TMP_Text>();
-        mapTitleLabel = GameObject.Find("MapTitleLabel").GetComponent<TMP_Text>();
+        tileTypeLabel = GameObject.Find("TileTypeLabel").GetComponent<TMP_Text>();
+        tileFlagLabel = GameObject.Find("TileFlagLabel").GetComponent<TMP_Text>();
 
+        unitTypeLabel = GameObject.Find("UnitTypeLabel").GetComponent<TMP_Text>();
+        unitFaceLabel = GameObject.Find("UnitFaceLabel").GetComponent<TMP_Text>();
+        unitGroupLabel = GameObject.Find("UnitGroupLabel").GetComponent<TMP_Text>();
     }
     
     /// <summary>
@@ -64,14 +72,10 @@ public class EditToolsMenuScript : MonoBehaviour {
 	public void Start() {
 
 	    optionMenu = GameObject.Find("OptionPicker").GetComponent<TMP_Dropdown>();
-		heightMenu = GameObject.Find("HeightPicker").GetComponent<TMP_Dropdown>();
         flagMenu = GameObject.Find("FlagPicker").GetComponent<TMP_Dropdown>();
         agentMenu = GameObject.Find("AgentPicker").GetComponent<TMP_Dropdown>();
 
 		// fill in options on menus
-		heightMenu.ClearOptions();
-		heightMenu.AddOptions(new List<string>(Enum.GetNames(typeof(HeightEnum))));
-
 		flagMenu.ClearOptions();
 		flagMenu.AddOptions(new List<string>(Enum.GetNames(typeof(FlagEnum))));
 
@@ -80,18 +84,25 @@ public class EditToolsMenuScript : MonoBehaviour {
 
         // add listeners
         optionMenu.onValueChanged.AddListener(delegate {DoChangeOption();});
-        heightMenu.onValueChanged.AddListener(delegate {DoChangeHeight();});
         flagMenu.onValueChanged.AddListener(delegate {DoChangeFlag();});
         agentMenu.onValueChanged.AddListener(delegate {DoChangeAgent();});
 	}
 
-//======================================================================================================================
 
     /// <summary>
-    /// Delegate for TileEvent.
+    /// Called once/frame.  Can handle keystrokes.
     /// </summary>
-    /// <param name="tile"></param>
-    public void TileEventFunction( GameObject tile ) {
+	public void Update() {
+		HandleEditKeyboard();
+	}
+
+	//======================================================================================================================
+
+	/// <summary>
+	/// Delegate for TileEvent.
+	/// </summary>
+	/// <param name="tile"></param>
+	public void TileEventFunction( TileScript tile ) {
         DoUpdateWorkingTile( tile );
 	}
 
@@ -116,7 +127,31 @@ public class EditToolsMenuScript : MonoBehaviour {
 
    
 //======================================================================================================================
-//      Size Menu
+//      Height Menu
+
+        public void RaiseTileHeight() {
+print("RAISE TILE HEIGHT >>>>>>>");
+
+            if (workingTile==null) return;          // nothing selected
+
+            HeightEnum height = workingTile.Place.Height;
+            if (height==HeightEnum.Wall) return;        // at limit
+
+            workingTile.Place.Height = (HeightEnum)((int)height + 1 );
+            workingTile.RedrawSelectedTile( cursor );
+		}
+
+        public void LowerTileHeight() {
+  print("LOWER TILE HEIGHT >>>>>>>");
+      
+            if (workingTile==null) return;          // nothing selected
+
+            HeightEnum height = workingTile.Place.Height;
+            if (height==HeightEnum.Pit) return;        // at limit
+
+            workingTile.Place.Height = (HeightEnum)((int)height - 1 );
+            workingTile.RedrawSelectedTile( cursor );
+		}
 
 //======================================================================================================================
 // Tile Select + Drag
@@ -125,56 +160,78 @@ public class EditToolsMenuScript : MonoBehaviour {
     /// When a tile is clicked, invoke this method.
     /// </summary>
     /// <param name="who"></param>
-    static public void SelectTile( GameObject who ) {
-//print("SelectTile = "+who );
-        tileSelectEvent.Invoke( who );
+    static public void SelectTile( TileScript who ) {
+print("SelectTile = " + who.Place.Where);
+		tileSelectEvent.Invoke( who );
     }
 
     /// <summary>
     /// When player clicks on a tile, select that tile and update menus.
     /// </summary>
     /// <param name="nextTile"></param>
-    void DoUpdateWorkingTile( GameObject nextTile ) {
+    void DoUpdateWorkingTile( TileScript nextTile ) {
 
-//print("DoUpdateTile="+nextTile);
-        // no work!
-        if ( workingTile==nextTile ) return;
+print("DoUpdateTile=" + nextTile.Place.Where);
+		// no work!
+		if ( workingTile==nextTile ) return;
 
         // disable graphics and UI for old tile
         if ( workingTile!=null && nextTile==null ) {
             cursor.SetActive(false);
             workingTile = null;
+            UpdateTileLabels();
             return;
 		}
 
         // update menu & mark with cursor
         workingTile = nextTile;
-        
-        TileScript tileScript = workingTile.GetComponent<TileScript>();
-        
-        // update cursor for new tile
-        tileScript.TakeCursor( cursor );
+        Place place = workingTile.Place;
 
-        // update UI for tile info
-        TileScript myRef = workingTile.GetComponent<TileScript>();
-        LevelMap map = currentMap;
+        // update cursor for new tile
+        workingTile.TakeCursor( cursor );
 
         // setting menu values
-        Place place = map.Places[myRef.MLOC.X, myRef.MLOC.Y];
-        heightMenu.value = (int)place.Height;
         flagMenu.value = (int)place.Flag;
-
 		//agentMenu.value = place.Agent.Type.Index;
+
+         UpdateTileLabels();
 	}
 
     /// <summary>
     /// When a tile is dragged, call this method.
     /// </summary>
     /// <param name="delta"></param>
-    static public void DragTile( Vector3 delta ) {
+ //   static public void DragTile( Vector3 delta ) {
 
-	}
+	//}
     
+    internal void UpdateTileLabels() {
+print("UpdateTileLabels");
+
+        if (workingTile==null) {
+            tileTypeLabel.text = "Tile: - - -";
+            tileFlagLabel.text = "Flag: - - -";
+		}
+        else {
+print("WorkingTile at "+workingTile.Place.Where);
+            Place place = workingTile.Place;
+            tileTypeLabel.text = "Tile: "+place.Height.ToString();
+            tileFlagLabel.text = "Flag: "+place.Flag.ToString();
+        }
+
+        var agent = workingTile?.Place.Agent;
+        if (agent==null) {
+            unitTypeLabel.text = "Type: - - -";
+            unitFaceLabel.text = "Face: - - -";
+            unitGroupLabel.text = "Group: - - -";
+		}
+        else {
+            unitTypeLabel.text = "Type: "+agent.Type.Name;
+            unitFaceLabel.text = "Face: "+agent.Face.ToString();
+            unitGroupLabel.text = "Group: "+agent.Faction;
+		}
+	}
+
 //======================================================================================================================
 
     public void DoChangeOption() {
@@ -192,13 +249,6 @@ print("OPTION="+pick);
 		}
 	}
 
-
-    public void DoChangeHeight() {
-print("NEW HIEGHT="+heightMenu.value);
-        if (workingTile==null) return;
-        workingTile.GetComponent<TileScript>().SetHeight( heightMenu.value );
-	}
-
     public void DoChangeAgent() {
         print("NEW AGENT="+agentMenu.value);
         AgentType type = AgentType.Get( agentMenu.value );
@@ -207,6 +257,17 @@ print("NEW HIEGHT="+heightMenu.value);
 
     public void DoChangeFlag() {
         print("NEW FLAG="+flagMenu.value);
+	}
+    
+//======================================================================================================================
+
+    internal void HandleEditKeyboard() {
+        
+        if (Input.GetKeyDown(KeyCode.Greater) ||
+            Input.GetKeyDown(KeyCode.Period) ) RaiseTileHeight();
+
+        if (Input.GetKeyDown(KeyCode.Less) || 
+            Input.GetKeyDown(KeyCode.Comma)) LowerTileHeight();
 	}
 
 }

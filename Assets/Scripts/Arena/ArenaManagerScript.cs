@@ -200,8 +200,7 @@ namespace Arena {
 
                     // add tile script with  reference information
 				    TileScript info = tile.AddComponent<TileScript>();
-                    info.owner = this;
-				    info.SetRef( ix, iy, c.x-ix, c.y-iy, materials[tileId] );
+				    info.SetRef( this, currentMap.Places[ix,iy], c.x-ix, c.y-iy, materials[tileId] );
 
                     // cleanup
                     info.RedrawTile();

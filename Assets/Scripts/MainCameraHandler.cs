@@ -2,6 +2,8 @@
 //	Copyright 2021 Frederick William Haslam born 1962 in the USA
 //
 
+using Arena;
+
 using Shared;
 
 using UnityEngine;
@@ -21,18 +23,11 @@ public class MainCameraHandler : MonoBehaviour {
 	public Slider zoomSlider;
 
     // set by turn controls
-    static int turning;
     internal Vector3 focus = new Vector3(0,0,0);
     internal float currentTurning,angle,zoom;
     
-    // drag
-    internal bool isDragging;
-    internal Vector3 mouseDragFrom;
-
+    // drag constants
     internal readonly Vector3 cameraUp = Vector3.forward;
-
-    // when a tile is dragged, move the camera
-    static internal readonly UnityEvent<Vector3> tileDragEvent = new UnityEvent<Vector3>();
 
  
 //======================================================================================================================
@@ -42,15 +37,12 @@ public class MainCameraHandler : MonoBehaviour {
     /// </summary>
     void Start() {
 
-        currentTurning = turning = 0;
+        currentTurning = 0;
         angle = startAngle;
         zoom = startZoom;
 
         // starting camera location
         FixCameraLocation( focus, angle, zoom );
-        //Vector2 where = zoom * MathTools.DegreesToPosition( angle );
-        //transform.position = new Vector3( where.x, where.y, zoom );
-        //transform.LookAt( focus, cameraUp );
 
 		// listen to the scale slider
 		zoomSlider.onValueChanged.AddListener(delegate { ScaleSliderChange(); });
@@ -58,21 +50,17 @@ public class MainCameraHandler : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update() {
+//print("CAMERA UPDATE <<<<====");
 
-        // for hover, tap and drag
-        //MouseDrag();
+        // keyboard moves camera
+        HandleCameraKeyboard();
 
         // mouse wheel and screen pinch
         CheckZoom();
 
-		// change angle based on 'turn' controls
-		currentTurning = Mathf.Lerp( currentTurning, turning, Time.deltaTime * rotateLerpSpeed );
-        angle += currentTurning * rotateSpeed * Time.deltaTime;
-        while (angle<0) angle += 360;
-        while (angle>=360) angle -= 360;
-
         // move camera
         FixCameraLocation( focus, angle, zoom );
+
 
 	}
 
@@ -82,83 +70,113 @@ public class MainCameraHandler : MonoBehaviour {
     /// Add self as Event Listener
     /// </summary>
 	public void OnEnable() {
-        tileDragEvent.AddListener( TileDragFunction );
+        TileScript.tileDragEvent.AddListener( TileDragFunction );
 	}
 
     /// <summary>
     /// Remove self as Event Listener
     /// </summary>
 	public void OnDisable() {
-        tileDragEvent.RemoveListener( TileDragFunction );
+        TileScript.tileDragEvent.RemoveListener( TileDragFunction );
+	}
+
+	/// <summary>
+	/// Implement camera drag, with location and facing limits.
+	/// </summary>
+	/// <param name="start"></param>
+	/// <param name="delta"></param>
+	public void TileDragFunction(Vector3 start, Vector3 delta) {
+//print("Tile Drag = "+delta);
+		if (IsRotate(start)) {
+            float turning = delta.x;
+			RotateCamera( turning );
+		}
+		else {
+			DragCamera(delta);
+		}
 	}
 
     /// <summary>
-    /// Call this global method to report tile drag events.
+    /// Keystrokes that move the camera around the world.
     /// </summary>
-    /// <param name="delta"></param>
-    static public void TileDragged( Vector3 delta ) {
-        tileDragEvent.Invoke( delta );
+    internal void HandleCameraKeyboard() {
+//print("Handle Camera Keyboard");
+
+        if (Input.GetKey(KeyCode.W)) MoveCameraFocus( 0, +1f );
+        if (Input.GetKey(KeyCode.S)) MoveCameraFocus( 0, -1f );
+
+        if (Input.GetKey(KeyCode.A)) MoveCameraFocus( +1f, 0f );
+        if (Input.GetKey(KeyCode.D)) MoveCameraFocus( -1f, 0f );
+
+        if (Input.GetKey(KeyCode.Q)) RotateCamera( -1f );
+        if (Input.GetKey(KeyCode.E)) RotateCamera( +1f );
+
+	}
+    
+    /// <summary>
+    /// Transform keyboard into camera move.
+    /// </summary>
+    /// <param name="horz"></param>
+    /// <param name="vert"></param>
+    internal void MoveCameraFocus( float horz, float vert ) {
+        DragCamera( new Vector3( horz, vert, 0f ) );
 	}
 
-    /// <summary>
-    /// Implement camera drag, with location and facing limits.
-    /// </summary>
-    /// <param name="delta"></param>
-    public void TileDragFunction( Vector3 delta ) {
-        print("Tile Drag = "+delta);
-        MoveCamera( delta );
-	}
-   
- //======================================================================================================================
+//======================================================================================================================
 
-    /// <summary>
-    /// Once we know our angle and distance and view target, place the camera.
-    /// </summary>
-    /// <param name="focus"></param>
-    /// <param name="angle"></param>
-    /// <param name="zoom"></param>
-    internal void FixCameraLocation( Vector3 focus, float angle, float zoom) {
+	/// <summary>
+	/// Once we know our angle and distance and view target, place the camera.
+	/// </summary>
+	/// <param name="focus"></param>
+	/// <param name="angle"></param>
+	/// <param name="zoom"></param>
+	internal void FixCameraLocation( Vector3 focus, float angle, float zoom) {
         Vector2 where = zoom * MathTools.DegreesToPosition(angle);
 		transform.position = new Vector3(focus.x + where.x, focus.y + where.y, zoom);
 		transform.LookAt(focus, cameraUp );
 	}
 
     /// <summary>
-    /// No longer reliable, need to somehow use the IPointer system.
+    /// If the point is inside an ellipse in the center of the screen, then drag else rotate
     /// </summary>
-    internal void MouseDrag() {
+    /// <param name="start"></param>
+    /// <returns>true for use mouse drag to rotate</returns>
+    internal bool IsRotate( Vector3 start ) {
 
-print("MouseDrag");
-        if (Input.GetMouseButtonDown(0)) {
 
-            // discard clicks on UI objects.
-            if (!EventSystem.current.IsPointerOverGameObject()) {
-                mouseDragFrom = Input.mousePosition;
-                isDragging = true;
-            }
+        //float dx = 2f * ( start.x - Screen.width/2f ) / Screen.width;
+        //if (dx<-0.8f || dx>0.8f) return true;
+        float dy = 2f * ( start.y - Screen.height/2f ) / Screen.height;
+//print("DY="+dy);
+        if (dy<-0.5f) return true;
+        return false;
 
-		}
-
-        if (Input.GetMouseButtonUp(0)) {
-            isDragging = false;
-		}
-
-        if (isDragging && Input.GetMouseButton(0)) { 
-            
-            Vector3 newMouse = Input.mousePosition;
-            Vector3 delta = newMouse - mouseDragFrom;
-            mouseDragFrom = newMouse;
-
-            MoveCamera( delta );
-
-		}
+        //float dx = 2f * ( start.x - Screen.width/2f ) / Screen.width;
+        //float dy = 2f * ( start.y - Screen.height/2f ) / Screen.height;
+        //float dist2 = dx*dx + dy*dy;
+        //return ( dist2 > 0.50f );
 	}
+
+    /// <summary>
+    /// Rotate camera some amount based on mouse drag or keyboard.
+    /// </summary>
+    /// <param name="turning"></param>
+    internal void RotateCamera( float turning ) {
+
+		currentTurning = Mathf.Lerp( currentTurning, turning, Time.deltaTime * rotateLerpSpeed );
+        angle += currentTurning * rotateSpeed * Time.deltaTime;
+        angle = MathTools.Modulus( angle, 360f );
+
+	}
+
+
+//======================================================================================================================
 
     /// <summary>
     /// Used with 'drag' logic.
     /// </summary>
     /// <param name="delta"></param>
-    internal void MoveCamera( Vector3 delta) {
+    internal void DragCamera(  Vector3 delta) {
 
         Vector2 forward = delta.y * MathTools.DegreesToPosition( angle );
         Vector2 sideway = delta.x * MathTools.DegreesToPosition( angle+90 );
@@ -212,14 +230,6 @@ print("MouseDrag");
     }
 
 	/// <summary>
-	/// Player is using 'turn' controls.
-	/// </summary>
-	/// <param name="value"></param>
-	static public void AddTurning(int value) {
-        turning += value;
-	}
-
-	/// <summary>
 	/// Assume slider has continuous value from zero to one.
     /// This is called when player changes slider.
 	/// </summary>
@@ -227,26 +237,5 @@ print("MouseDrag");
 		//zoom = startZoom + (mainSlider.value - 0.5f) * 10f;
         zoom =  Mathf.Clamp( minZoom + (maxZoom-minZoom) * zoomSlider.value, minZoom,  maxZoom);
 	}
-
-//======================================================================================================================
-
-    /// <summary>
-    /// Which object in screen got clicked?
-    /// </summary>
-    /// <returns></returns>
-	internal GameObject FindClickTarget() {
-
-        Vector3 mouse = Input.mousePosition;
-        Ray ray = Camera.main.ScreenPointToRay(mouse);
-        RaycastHit hit;
-
-        // did we hit anything ?
-        if (!Physics.Raycast(ray, out hit)) {
-            //cursor.SetActive(false);
-            return null;
-        }
-        
-        return hit.transform.gameObject;
-    }
 
 }

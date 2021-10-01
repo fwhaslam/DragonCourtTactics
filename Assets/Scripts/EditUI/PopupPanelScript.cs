@@ -13,13 +13,11 @@ namespace EditUI {
 
 
 	/// <summary>
-	/// Setting up your popup panel.
-	/// Create the panel, leave it active somewhere offscreen.
-	/// Add invisible buttons which are 'Touchable'.  Add symbols to the buttons.
-	/// Add a trigger button, link it here as the 'pickerButton'.
-	/// Add this script to the panel.
+	/// Standard Popup Panel.
+	/// An onscreen button opens and closes the panel, which is an animation.
+	/// Deselect event hides panel, buttons in panel apply choice.
 	/// </summary>
-	public class PopupPanelScript : MonoBehaviour, IDeselectHandler {	//, IPointerClickHandler, ISelectHandler
+	public class PopupPanelScript : MonoBehaviour, IDeselectHandler {
 
 		public GameObject pickerButton;
 		public GameObject animatorOwner;
@@ -72,7 +70,7 @@ namespace EditUI {
 		/// Called when Picker button is clicked.  Attach to SizePicker.
 		/// </summary>
 		public void PickerButtonClicked() {
-//print(">>>> Size Picker Clicked showing?="+IsActive()+"   mark="+(++mark) );
+print(">>>> Popup Picker Clicked name=" + gameObject.name + "   mark=" + (++mark));
 
 			if (!IsShowing()) {
 				Show();
@@ -107,7 +105,7 @@ namespace EditUI {
 			//gameObject.SetActive(false);
 
 			showHideAnim.SetBool( animBoolKey, false );
-			UnityTools.SetSelected( null );			// ??
+			//UnityTools.SetSelected( null );			// not right, I don't know how to 'unselect', but apparently the OnDeselect event occurs after
 		}
 	}
 
