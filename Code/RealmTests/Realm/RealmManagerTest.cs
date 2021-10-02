@@ -22,7 +22,11 @@ namespace Realm {
 
 			LevelMap map = RealmFactory.SimpleTerrain(8,8);
 
+			// invocation
 			string result = RealmManager.DumpLevelMap( map );
+
+			// assertions
+			result = result.Replace( "\r", "" );
 			
 			AreEqual( "Title: Empty Map\n" +
 			"Wide: 8\n" +
@@ -40,7 +44,9 @@ namespace Realm {
 			"- Name: Peasant\n" +
 			"  Face: North\n" +
 			"  Status: Alert\n" +
-			"  Faction: 0", result );
+			"  Faction: 0\n" +
+			"Text: \n" + 
+			"  Start: Some Story", result );
 		}
 	}
 }

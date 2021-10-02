@@ -11,50 +11,42 @@ namespace Realm {
 
 
 using static Realm.AgentTrait;
+	using YamlDotNet.Serialization;
 
 	public class AgentType {
 
 		static internal Dictionary<string,AgentType> registry = new Dictionary<string,AgentType>();
 		static internal List<AgentType> list = new List<AgentType>();
 
-		// heros
+//======================================================================================================================
+
+		// Tier Zero
 		static public readonly AgentType PEASANT = 
-			MakeAgentType("Peasant",5,5,2,0,1,COWARD);
-
-		static public readonly AgentType SOLDIER = 
-			MakeAgentType("Soldier",5,5,3,0,1);
-
-		static public readonly AgentType GUARD = 
-			MakeAgentType("Guard",5,5,3,0,1,SHIELD);
-
-		// villains
+			MakeAgentType("Peasant",COWARD,FRAIL,WEAK);
+		
 		static public readonly AgentType GOBLIN = 
-			MakeAgentType("Goblin",5,5,2,0,1);
+			MakeAgentType("Goblin",COWARD,FRAIL,WEAK);
+		
+		static public readonly AgentType SKELETON = 
+			MakeAgentType("Skeleton",FRAIL,SLOW,WEAK,UNDEAD);
 
-		static public readonly AgentType ORC = 
-			MakeAgentType("Orc",5,5,3,0,1);
+		// Tier One
+				
+		static public readonly AgentType GHOST = 
+			MakeAgentType("Skeleton",HOVER,SLOW,WEAK,MYSTIC);
+
+//======================================================================================================================
 
 		/// <summary>
 		/// Create and register an agent
 		/// </summary>
-		/// <param name="n"></param>
-		/// <param name="s"></param>
-		/// <param name="h"></param>
-		/// <param name="d"></param>
-		/// <param name="a"></param>
-		/// <param name="r"></param>
 		/// <param name="at"></param>
 		/// <returns></returns>
-		static internal AgentType MakeAgentType(String n,int s,int h,int d,int a,int r,params AgentTrait[] at) {
+		static internal AgentType MakeAgentType(String n,params AgentTrait[] at) {
 
 			AgentType make = new AgentType();
 			make.Name = n;
 			make.Index = list.Count;
-			make.Steps = s;
-			make.Health = h;
-			make.Damage = d;
-			make.Armor = a;
-			make.Range = r;
 			make.Traits = new HashSet<AgentTrait>( at );
 
 			registry[ make.Name ] = make ;
@@ -75,30 +67,101 @@ using static Realm.AgentTrait;
 			foreach ( object key in registry.Keys ) list.Add( key.ToString() );
 			return list;
 		}
+		
+//======================================================================================================================
 
 		// Descriptor
 		public string Name { get; internal set; }
 
-		// position in type list
-		public int Index { get; internal set; }
-
-		// Movement
-		public int Steps { get; internal set; }
-
-		// Health, reduced by enemy damage
-		public int Health { get; internal set; }
-
-		// Damage, reduces enemy health
-		public int Damage { get; internal set; }
-
-		// How much attack damage is reduced from enemies
-		public int Armor { get; internal set; }
-
-		// How far away can this agent attack?
-		public int Range { get; internal set; }
-
 		// Traits, binary values associated to agent.
 		public HashSet<AgentTrait> Traits { get; internal set; }
+
+		// position in type list
+		[YamlIgnore]
+		public int Index { get; internal set; }
+
+		/// <summary>
+		/// Does this AgentType have this trait?
+		/// </summary>
+		/// <param name="trait"></param>
+		/// <returns></returns>
+		public bool Has( AgentTrait trait) {
+			return Traits.Contains(trait);
+		}
+		
+//======================================================================================================================
+
+		// Movement
+		public int Steps {
+			get { 
+				int num = 5;
+				if (Has(AgentTrait.FAST)) num += 3;
+				if (Has(AgentTrait.SLOW)) num -= 2;
+				return num;
+			}
+		}
+
+		// Health, reduced by enemy damage
+		public int Health {
+			get { 
+				int num = 5;
+				if (Has(AgentTrait.STURDY)) num += 3;
+				if (Has(AgentTrait.FRAIL)) num -= 2;
+				return num;
+			}
+		}
+
+		// Damage, reduces enemy health
+		public int Damage { 
+			get { 
+				int num = 2;
+				if (Has(AgentTrait.STRONG)) num += 2;
+				if (Has(AgentTrait.WEAK)) num -= 1;
+				return num;
+			} 
+		}
+
+		// How much attack damage is reduced from enemies
+		public int Armor { 
+			get { 
+				int num = 0;
+				return num;
+			} 
+		}
+
+		// How far away can this agent attack?
+		// Expressed in steps.
+		public int Range { 
+			get { 
+				int num = 3;
+				return num;
+			} 
+		}
+				
+//======================================================================================================================
+
+		/// <summary>
+		/// Is this agent afraid of that agent?
+		/// </summary>
+		/// <param name="what"></param>
+		/// <returns></returns>
+		public bool AfraidOf( AgentType who ) {
+
+			if (Has(COWARD)) return true;
+
+			// Brave and Undead not afraid of Scary
+			if (who.Has(SCARY)) {
+				if (!Has(BRAVE) && !Has(UNDEAD)) return true;
+			}
+
+			// Undead afraid of Holy
+			if (who.Has(HOLY)) {
+				if (Has(UNDEAD)) return true;
+			}
+
+			return false;
+
+		}
 
 	}
 }
