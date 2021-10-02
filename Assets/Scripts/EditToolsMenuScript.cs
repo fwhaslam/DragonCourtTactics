@@ -30,7 +30,7 @@ public class EditToolsMenuScript : MonoBehaviour {
     public GameObject cursor;
 
 	internal TileScript workingTile;
-    internal TMP_Dropdown optionMenu, flagMenu, agentMenu ;
+    internal TMP_Dropdown optionMenu, flagMenu ;
     internal TMP_Text mapTitleLabel,
         mapSizeLabel,tileTypeLabel,tileFlagLabel,
         unitTypeLabel,unitFaceLabel,unitGroupLabel;
@@ -73,19 +73,14 @@ public class EditToolsMenuScript : MonoBehaviour {
 
 	    optionMenu = GameObject.Find("OptionPicker").GetComponent<TMP_Dropdown>();
         flagMenu = GameObject.Find("FlagPicker").GetComponent<TMP_Dropdown>();
-        agentMenu = GameObject.Find("AgentPicker").GetComponent<TMP_Dropdown>();
 
 		// fill in options on menus
 		flagMenu.ClearOptions();
 		flagMenu.AddOptions(new List<string>(Enum.GetNames(typeof(FlagEnum))));
 
-		agentMenu.ClearOptions();
-		agentMenu.AddOptions( AgentType.GetOptions() );
-
         // add listeners
         optionMenu.onValueChanged.AddListener(delegate {DoChangeOption();});
         flagMenu.onValueChanged.AddListener(delegate {DoChangeFlag();});
-        agentMenu.onValueChanged.AddListener(delegate {DoChangeAgent();});
 	}
 
 
@@ -247,12 +242,6 @@ print("OPTION="+pick);
             default:
                 throw new UnityException("Unknown Option Menu Selection = ["+pick+"]");
 		}
-	}
-
-    public void DoChangeAgent() {
-        print("NEW AGENT="+agentMenu.value);
-        AgentType type = AgentType.Get( agentMenu.value );
-        workingTile.GetComponent<TileScript>().AddAgent( type, DirEnum.North );
 	}
 
     public void DoChangeFlag() {
