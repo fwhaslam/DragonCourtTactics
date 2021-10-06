@@ -30,10 +30,12 @@ public class EditToolsMenuScript : MonoBehaviour {
     public GameObject cursor;
 
 	internal TileScript workingTile;
-    internal TMP_Dropdown optionMenu, flagMenu ;
+    internal TMP_Dropdown flagMenu, 
+        unitTypeDropdown, unitFaceDropdown, unitGroupDropdown, unitStateDropdown ;
     internal TMP_Text mapTitleLabel,
-        mapSizeLabel,tileTypeLabel,tileFlagLabel,
-        unitTypeLabel,unitFaceLabel,unitGroupLabel;
+        mapSizeLabel,tileTypeLabel,tileFlagLabel;
+
+    internal List<string> unitTypeOptions,unitFaceOptions,unitGroupOptions,unitStateOptions;
 
     // single tile change event
     internal static UnityEvent<TileScript> tileSelectEvent = new UnityEvent<TileScript>();
@@ -47,9 +49,15 @@ public class EditToolsMenuScript : MonoBehaviour {
         tileTypeLabel = GameObject.Find("TileTypeLabel").GetComponent<TMP_Text>();
         tileFlagLabel = GameObject.Find("TileFlagLabel").GetComponent<TMP_Text>();
 
-        unitTypeLabel = GameObject.Find("UnitTypeLabel").GetComponent<TMP_Text>();
-        unitFaceLabel = GameObject.Find("UnitFaceLabel").GetComponent<TMP_Text>();
-        unitGroupLabel = GameObject.Find("UnitGroupLabel").GetComponent<TMP_Text>();
+        unitTypeDropdown = GameObject.Find("UnitTypeDD").GetComponent<TMP_Dropdown>();
+        unitFaceDropdown = GameObject.Find("UnitFaceDD").GetComponent<TMP_Dropdown>();
+        unitGroupDropdown = GameObject.Find("UnitGroupDD").GetComponent<TMP_Dropdown>();
+        unitStateDropdown = GameObject.Find("UnitStateDD").GetComponent<TMP_Dropdown>();
+
+        FixUnitTypeOptions();
+        FixUnitFaceOptions();
+        FixUnitGroupOptions();
+        FixUnitStateOptions();
     }
     
     /// <summary>
@@ -71,16 +79,33 @@ public class EditToolsMenuScript : MonoBehaviour {
 	// Start is called after Awake/Enable, but before any Update
 	public void Start() {
 
-	    optionMenu = GameObject.Find("OptionPicker").GetComponent<TMP_Dropdown>();
         flagMenu = GameObject.Find("FlagPicker").GetComponent<TMP_Dropdown>();
 
 		// fill in options on menus
 		flagMenu.ClearOptions();
 		flagMenu.AddOptions(new List<string>(Enum.GetNames(typeof(FlagEnum))));
 
+        unitTypeDropdown.gameObject.SetActive(false);
+        unitTypeDropdown.ClearOptions();
+        unitTypeDropdown.AddOptions( unitTypeOptions );
+
+        unitFaceDropdown.gameObject.SetActive(false);
+        unitFaceDropdown.ClearOptions();
+        unitFaceDropdown.AddOptions( unitFaceOptions );
+
+        unitGroupDropdown.gameObject.SetActive(false);
+        unitGroupDropdown.ClearOptions();
+        unitGroupDropdown.AddOptions( unitGroupOptions );
+
+        unitStateDropdown.gameObject.SetActive(false);
+        unitStateDropdown.ClearOptions();
+        unitStateDropdown.AddOptions( unitStateOptions );
+
         // add listeners
-        optionMenu.onValueChanged.AddListener(delegate {DoChangeOption();});
         flagMenu.onValueChanged.AddListener(delegate {DoChangeFlag();});
+        unitTypeDropdown.onValueChanged.AddListener(delegate {DoChangeUnitType();});
+        unitFaceDropdown.onValueChanged.AddListener(delegate {DoChangeUnitFace();});
+        unitGroupDropdown.onValueChanged.AddListener(delegate {DoChangeUnitGroup();});
 	}
 
 
@@ -91,7 +116,7 @@ public class EditToolsMenuScript : MonoBehaviour {
 		HandleEditKeyboard();
 	}
 
-	//======================================================================================================================
+//======================================================================================================================
 
 	/// <summary>
 	/// Delegate for TileEvent.
@@ -117,12 +142,73 @@ public class EditToolsMenuScript : MonoBehaviour {
 	}
     
 //======================================================================================================================
-//      Options Menu
+//      Menu Options
 
+    internal void FixUnitTypeOptions() {
+        List<string> options = new List<string>();
+        options.AddRange( AgentType.Keys() );
+        unitTypeOptions = options;
+	}
 
+    internal void FixUnitFaceOptions() {
+        List<string> options = new List<string>();
+        foreach ( DirEnum value in Enum.GetValues(typeof(DirEnum))) {
+            options.Add( value.ToString() );
+		}
+        unitFaceOptions = options;
+	}
+
+    internal void FixUnitGroupOptions() {
+        List<string> options = new List<string>();
+        options.Add ("White(hero)" );
+        options.Add( "Red" );
+        options.Add( "Green" );
+        options.Add( "Blue" );
+        unitGroupOptions = options;
+	}
+
+    internal void FixUnitStateOptions() {
+        List<string> options = new List<string>();
+        foreach ( StatusEnum value in Enum.GetValues(typeof(StatusEnum))) {
+            options.Add( value.ToString() );
+		}
+        unitStateOptions = options;
+	}
    
+    public void DoChangeUnitType() {
+        var agent = (workingTile==null ? null : workingTile.Place.Agent );
+        if (agent!=null) {
+            agent.Type = AgentType.Get( unitTypeDropdown.value );
+            workingTile.RedrawTile();
+        }
+	}
+   
+    public void DoChangeUnitFace() {
+        var agent = (workingTile==null ? null : workingTile.Place.Agent );
+        if (agent!=null) {
+            agent.Face = (DirEnum)unitFaceDropdown.value;
+            workingTile.RedrawTile();
+        }
+	}
+   
+    public void DoChangeUnitGroup() {
+        var agent = (workingTile==null ? null : workingTile.Place.Agent );
+        if (agent!=null) {
+            agent.Faction = unitGroupDropdown.value;
+             workingTile.RedrawTile();
+       }
+	}
+  
+    public void DoChangeUnitState() {
+        var agent = (workingTile==null ? null : workingTile.Place.Agent );
+        if (agent!=null) {
+            agent.Status = (StatusEnum)unitStateDropdown.value;
+            workingTile.RedrawTile();
+       }
+	}
+
 //======================================================================================================================
-//      Height Menu
+//      Menus Affect Map
 
         public void RaiseTileHeight() {
 print("RAISE TILE HEIGHT >>>>>>>");
@@ -148,6 +234,36 @@ print("RAISE TILE HEIGHT >>>>>>>");
             workingTile.RedrawSelectedTile( cursor );
 		}
 
+        public void AddAgent() {
+ print("ADD AGENT");
+            if (workingTile==null) return;          // nothing selected
+
+            if (workingTile.Place.Agent==null) {
+                Place place = workingTile.Place;
+
+                var newAgent = new Agent( place.Where );
+                newAgent.Type = AgentType.Get( unitTypeDropdown.value );
+                newAgent.Face = (DirEnum) unitFaceDropdown.value;
+                newAgent.Faction = unitGroupDropdown.value;
+                newAgent.Status = (StatusEnum)unitStateDropdown.value;
+
+                place.Agent = new Agent( place.Where );
+                workingTile.RedrawTile();
+                tileSelectEvent.Invoke(workingTile);
+		    }
+	    }
+
+        public void DropAgent() {
+
+print("Remove AGENT!");
+            if (workingTile==null) return;          // nothing selected
+            if (workingTile.Place.Agent!=null) {
+                workingTile.Place.Agent = null;
+                workingTile.RedrawTile();
+               tileSelectEvent.Invoke(workingTile);
+		    }
+        }
+
 //======================================================================================================================
 // Tile Select + Drag
 
@@ -168,7 +284,7 @@ print("SelectTile = " + who.Place.Where);
 
 print("DoUpdateTile=" + nextTile.Place.Where);
 		// no work!
-		if ( workingTile==nextTile ) return;
+		//if ( workingTile==nextTile ) return;
 
         // disable graphics and UI for old tile
         if ( workingTile!=null && nextTile==null ) {
@@ -214,35 +330,29 @@ print("WorkingTile at "+workingTile.Place.Where);
             tileFlagLabel.text = "Flag: "+place.Flag.ToString();
         }
 
-        var agent = workingTile?.Place.Agent;
+        var agent = (workingTile==null ? null : workingTile.Place.Agent);
         if (agent==null) {
-            unitTypeLabel.text = "Type: - - -";
-            unitFaceLabel.text = "Face: - - -";
-            unitGroupLabel.text = "Group: - - -";
+            unitTypeDropdown.gameObject.SetActive( false );
+            unitFaceDropdown.gameObject.SetActive( false );
+            unitGroupDropdown.gameObject.SetActive( false );
+            unitStateDropdown.gameObject.SetActive( false );
 		}
         else {
-            unitTypeLabel.text = "Type: "+agent.Type.Name;
-            unitFaceLabel.text = "Face: "+agent.Face.ToString();
-            unitGroupLabel.text = "Group: "+agent.Faction;
+
+            unitTypeDropdown.value = unitTypeOptions.IndexOf( agent.Type.Name );
+            unitFaceDropdown.value = (int)agent.Face;
+            unitGroupDropdown.value = agent.Faction;
+            unitStateDropdown.value = (int)agent.Status;
+                       
+            unitTypeDropdown.gameObject.SetActive( true );
+            unitFaceDropdown.gameObject.SetActive( true );
+            unitGroupDropdown.gameObject.SetActive( true );
+            unitStateDropdown.gameObject.SetActive( true );
+
 		}
 	}
 
 //======================================================================================================================
-
-    public void DoChangeOption() {
-        var pick = optionMenu.options[optionMenu.value].text;
-print("OPTION="+pick);
-        switch (pick) { 
-            case "Exit": 
-                UnityTools.ChangeScene( GlobalValues.EntrySceneName );
-                break;
-            case "Save": /*load*/ break;
-            case "Load": /*save*/ break;
-            case "Reset": /*save*/ break;
-            default:
-                throw new UnityException("Unknown Option Menu Selection = ["+pick+"]");
-		}
-	}
 
     public void DoChangeFlag() {
         print("NEW FLAG="+flagMenu.value);

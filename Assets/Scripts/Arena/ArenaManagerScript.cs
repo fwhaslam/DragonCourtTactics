@@ -20,6 +20,7 @@ namespace Arena {
     public class ArenaManagerScript : MonoBehaviour {
 
         public Material pit,wall,hidden;
+        public Color[] factionColor;
 
         internal GameObject tileParent,levelParent,tokenParent;
         internal GameObject floor;

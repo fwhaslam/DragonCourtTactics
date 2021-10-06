@@ -20,8 +20,8 @@ namespace Arena {
 
         internal GameObject token = null;
         
-    // when a tile is dragged, move the camera :: function( V3 start, V3 delta )
-    static internal readonly UnityEvent<Vector3,Vector3> tileDragEvent = new UnityEvent<Vector3,Vector3>();
+        // when a tile is dragged, move the camera :: function( V3 start, V3 delta )
+        static internal readonly UnityEvent<Vector3,Vector3> tileDragEvent = new UnityEvent<Vector3,Vector3>();
 
         // Start is called before the first frame update
         void Start() {
@@ -77,27 +77,28 @@ namespace Arena {
             else {
                 
 print(">>>>>>>>>>>>>>>> BUILDING AGENT ===== at"+this.name);
-
                 if (token==null) {
-                    token  = Instantiate(Resources.Load("_prefabs/GoodToken") as GameObject);
+                    token  = Instantiate( Resources.Load("_prefabs/GoodToken") as GameObject );
+print(">>>>>>>>>>>>>>>> NEW TOKEN");
 				}
 
 				token.transform.localPosition = new Vector3( VLOC.x-0.5f, VLOC.y-0.5f, top );
                 token.transform.eulerAngles = new Vector3( 0f, 0f, ((int)agent.Face) * 45f );
 
-                // image
-                Material material = (Material)Resources.Load("Materials/ImageToken",typeof(Material));
-                material.SetColor( "Background", new Color( 1, 0.80f, 0.75f ) );
-                Texture orcFigure = (Texture)Resources.Load("Unpaid/Orc",typeof(Texture));
+                // token image with faction + agent appearance
+                Material material = Instantiate( Resources.Load("Materials/ImageToken") as Material );
 
+                int faction = agent.Faction;
+                material.SetColor( "Background", Owner.factionColor[ faction ]  );
+
+                string resourcePath = "Unpaid/Agents/"+agent.Type.Name;
+                Texture orcFigure = (Texture)Resources.Load(resourcePath,typeof(Texture));
                 material.SetTexture("Figure", orcFigure );
-                token.GetComponent<Renderer>().material = material;
 
+                token.GetComponent<Renderer>().material = material;
                 token.SetActive( true );
 
-                // TODO: create an 'agent pool'
                 UseParent( Owner.tokenParent, token );
-                
 		    }
 
 	    }
@@ -147,8 +148,7 @@ print(">>>>>>>>>>>>>>>> BUILDING AGENT ===== at"+this.name);
         /// <summary>
         /// X/Y reference into the map.  DX/DY draw into world.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
+        /// <param name="owner"></param>
         /// <param name="dx"></param>
         /// <param name="dy"></param>
         /// <param name="floor">default material when this cube is not pit nor wall.</param>
