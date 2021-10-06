@@ -42,7 +42,7 @@ namespace Realm {
 
 			// assertions
 			AreEqual( "Empty Map", result.Title );
-			IsNull( result.Image );
+			AreEqual( "pic1.png", result.Image );
 
 			AreEqual( 10, result.Places.GetLength(0) );
 			AreEqual( 12, result.Places.GetLength(1) );
@@ -67,7 +67,7 @@ DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Image );
+			AreEqual( "pic1.png", map.Image );
 
 			AreEqual( 5, map.Places.GetLength(0) );
 			AreEqual( 4, map.Places.GetLength(1) );
@@ -94,7 +94,7 @@ DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Image );
+			AreEqual( "pic1.png", map.Image );
 
 			AreEqual( 4, map.Places.GetLength(0) );
 			AreEqual( 5, map.Places.GetLength(1) );
@@ -121,7 +121,7 @@ DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Image );
+			AreEqual( "pic1.png", map.Image );
 
 			AreEqual( 5, map.Places.GetLength(0) );
 			AreEqual( 4, map.Places.GetLength(1) );
@@ -148,7 +148,7 @@ DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Image );
+			AreEqual( "pic1.png", map.Image );
 
 			AreEqual( 4, map.Places.GetLength(0) );
 			AreEqual( 5, map.Places.GetLength(1) );
@@ -177,7 +177,7 @@ DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Image );
+			AreEqual( "pic1.png", map.Image );
 
 			AreEqual( 5, map.Places.GetLength(0) );
 			AreEqual( 6, map.Places.GetLength(1) );
@@ -204,7 +204,7 @@ DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Image );
+			AreEqual( "pic1.png", map.Image );
 
 			AreEqual( 6, map.Places.GetLength(0) );
 			AreEqual( 5, map.Places.GetLength(1) );
@@ -231,7 +231,7 @@ DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Image );
+			AreEqual( "pic1.png", map.Image );
 
 			AreEqual( 5, map.Places.GetLength(0) );
 			AreEqual( 6, map.Places.GetLength(1) );
@@ -258,7 +258,7 @@ DisplayMap(map);
 
 			// assertions
 			AreEqual( "Empty Map", map.Title );
-			IsNull( map.Image );
+			AreEqual( "pic1.png", map.Image );
 
 			AreEqual( 6, map.Places.GetLength(0) );
 			AreEqual( 5, map.Places.GetLength(1) );

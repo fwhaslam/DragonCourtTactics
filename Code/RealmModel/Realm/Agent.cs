@@ -7,8 +7,6 @@ namespace Realm {
 	using Realm.Enums;
 	using Realm.Tools;
 
-	using RealmModel.Realm.Enums;
-
 	using YamlDotNet.Serialization;
 
 	public class Agent {

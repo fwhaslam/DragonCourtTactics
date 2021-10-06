@@ -13,15 +13,19 @@ namespace Realm {
 	[TestClass]
 	public class AgentTypeTest {
 
+		readonly int EXPECTED_AGENT_TYPES = 4;
+
 		[TestMethod]
-		public void GetOptions() {
+		public void Keys() {
 
 			// invocation
-			List<string> result = AgentType.GetOptions();
+			List<string> result = AgentType.Keys();
 
 			// assertions
+			AreEqual( EXPECTED_AGENT_TYPES, result.Count );
+
 			String display = String.Join( "\n", result );
-			Assert.AreEqual("None\nPeasant\nSoldier\nGuard\nGoblin\nOrc", display );
+			Assert.AreEqual("Peasant\nGoblin\nSkeleton\nGhost", display );
 
 		}
 
@@ -35,14 +39,14 @@ namespace Realm {
 			AreEqual("Peasant", result.Name );
 			AreEqual( 0, result.Index );
 
-			AreEqual( 5, result.Health );
+			AreEqual( 3, result.Health );
 			AreEqual( 5, result.Steps );
-			AreEqual( 2, result.Damage );
-			AreEqual( 1, result.Range );
+			AreEqual( 1, result.Damage );
+			AreEqual( 3, result.Range );
 			AreEqual( 0, result.Armor );
 
 			String display = String.Join( "\n", result.Traits.Select( e => e.Key ) );
-			AreEqual("Coward", display );
+			AreEqual("Frail\nWeak", display );
 
 		}
 	}

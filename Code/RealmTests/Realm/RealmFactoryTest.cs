@@ -60,7 +60,7 @@ namespace Realm {
 
 			AreEqual( 8, result.Agents.Count);
 
-			AreEqual("Soldier", result.Agents[0].Type.Name);
+			AreEqual("Peasant", result.Agents[0].Type.Name);
 
 		}
 

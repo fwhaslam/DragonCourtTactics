@@ -22,18 +22,17 @@ using static Realm.AgentTrait;
 
 		// Tier Zero
 		static public readonly AgentType PEASANT = 
-			MakeAgentType("Peasant",COWARD,FRAIL,WEAK);
+			MakeAgentType("Peasant",FRAIL,WEAK);
 		
 		static public readonly AgentType GOBLIN = 
-			MakeAgentType("Goblin",COWARD,FRAIL,WEAK);
+			MakeAgentType("Goblin",COWARD,SHORT,WEAK);
 		
 		static public readonly AgentType SKELETON = 
 			MakeAgentType("Skeleton",FRAIL,SLOW,WEAK,UNDEAD);
 
 		// Tier One
-				
 		static public readonly AgentType GHOST = 
-			MakeAgentType("Skeleton",HOVER,SLOW,WEAK,MYSTIC);
+			MakeAgentType("Ghost",HOVER,SLOW,WEAK,MYSTIC);
 
 //======================================================================================================================
 
@@ -56,16 +55,14 @@ using static Realm.AgentTrait;
 
 		static public int Count() { return list.Count; }
 		static public AgentType Get(int ix) { return list[ix]; }
+		static public AgentType Get(string key) { return registry[key]; }
 
 		/// <summary>
-		/// Options are all the types, plus 'none' for no agent.
+		/// Return a copy of the registry keys.
 		/// </summary>
 		/// <returns></returns>
-		static public List<string> GetOptions() {
-			var list = new List<string>();
-			list.Add( "None" );
-			foreach ( object key in registry.Keys ) list.Add( key.ToString() );
-			return list;
+		static public List<string> Keys() {
+			return new List<string>(registry.Keys);
 		}
 		
 //======================================================================================================================
