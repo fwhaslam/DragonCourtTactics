@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Realm.Enums {
-	class HeightEnumTraits {
+
+	public class HeightEnumTraits {
 
 		static readonly char[] Symbols = {'P','1','2','3','4','5','W'};
+		static readonly List<char> SymbolList = new List<char>(Symbols);
 
 		static public bool IsDamaging( HeightEnum height ) {
 			return (height==HeightEnum.Pit);
@@ -25,6 +27,11 @@ namespace Realm.Enums {
 
 		static public char Symbol(HeightEnum src ) {
 			return Symbols[(int)src];
+		}
+
+		static public HeightEnum FromSymbol( char symbol) {
+			int value = SymbolList.IndexOf(symbol);
+			return (HeightEnum)value;
 		}
 	}
 }

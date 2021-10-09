@@ -11,6 +11,11 @@ namespace Realm {
 
 	public class Agent {
  
+		/// <summary>
+		/// Provided to support YAML.
+		/// </summary>
+		public Agent() {}
+
 		public Agent(int  x,int y) {
 			Where = new Where(x,y);
 		}
@@ -30,8 +35,11 @@ namespace Realm {
 		/// </summary>
 		[YamlIgnore]
 		public AgentType Type {  get; set; } = AgentType.PEASANT;
-
-		public string Name { get => Type.Name; }
+		
+		public string Name { 
+			get => Type.Name; 
+			set => Type = AgentType.Get( value );
+		}
 
 		public DirEnum Face { get; set; } = DirEnum.North;
 

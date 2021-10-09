@@ -14,6 +14,7 @@ namespace Realm {
 	using static Realm.Tools.MapTools;
 	using System.Text;
 	using YamlDotNet.Serialization;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// Representation of the play region.  Always a rectangle.
@@ -25,7 +26,10 @@ namespace Realm {
 
 		internal Dictionary<string,string> textMap = new Dictionary<string, string>();
 
-		internal LevelMap() { }
+		/// <summary>
+		/// Provided to support YAML.
+		/// </summary>
+		public LevelMap() { }
 
 		static public LevelMap Allocate( int w, int t ) {
 
@@ -45,8 +49,8 @@ namespace Realm {
 			return work;
 		}
 
-		static public Place CreatePlace(int x, int y, Place src) { 
-			return new Place(x,y);
+		static public Place CreatePlace(int col, int row, Place src) { 
+			return new Place( col, row );
 		}
 
 //======================================================================================================================
@@ -59,6 +63,8 @@ namespace Realm {
 
 		public int Tall { get; internal set; }
 		
+		public List<Agent> Agents { get; internal set; }
+
 		/// <summary>
 		/// Places become 'Map' for Yaml storage.
 		/// </summary>
@@ -66,8 +72,6 @@ namespace Realm {
 		public Place[,] Places { get; internal set; }
 
 		public List<string> Map { get => MapAsStrings(); set => StringsAsMap(value); }
-
-		public List<Agent> Agents { get; internal set; }
 
 		public Dictionary<string,string> Text {  get => textMap; set => textMap = value; }
 
@@ -150,7 +154,7 @@ namespace Realm {
 			foreach (var who in Agents.ToList()) { 
 				who.Where.X += sw;
 				who.Where.Y += st;
-Console.Out.WriteLine("AGENT AT ="+who.Where );
+//Console.Out.WriteLine("AGENT AT ="+who.Where );
 			}
 
 			// copy over
@@ -192,7 +196,7 @@ Console.Out.WriteLine("AGENT AT ="+who.Where );
 
 			// copy old Places into new Places
 			LevelMap temp = LevelMap.Allocate( nw, nt );
-Console.Out.WriteLine("   sw="+sw+"  st="+st );
+//Console.Out.WriteLine("   sw="+sw+"  st="+st );
 			for ( int wx=0;wx<nw;wx++ ) {
 				for (int tx=0;tx<nt;tx++) {
 					if (wx-sw>=0 && tx-st>=0) { 
@@ -205,7 +209,7 @@ Console.Out.WriteLine("   sw="+sw+"  st="+st );
 			foreach (var who in Agents.ToList()) { 
 				who.Where.X += sw;
 				who.Where.Y += st;
-Console.Out.WriteLine("AGENT AT ="+who.Where );
+//Console.Out.WriteLine("AGENT AT ="+who.Where );
 				// new spot is out of bounds
 				if (who.Where.X>=nw || who.Where.Y>=nt || who.Where.X<0 || who.Where.Y<0 ) {
 					Agents.Remove(who);
@@ -221,6 +225,18 @@ Console.Out.WriteLine("AGENT AT ="+who.Where );
 
 //======================================================================================================================
 
+		// format: HeightChar, FlagChar, AgentID(##)
+		//static readonly string PART_FORMAT = "%c%c%02d";
+
+		// one 'part' is one 'tile'
+		static readonly char STRING_PARTS_SEP = '/';
+
+		// agent ids
+		static readonly string NO_AGENT_SYMBOL = "__";
+		static readonly string AGENT_ID_FORMAT = "00";
+
+//======================================================================================================================
+
 		/// <summary>
 		/// String representation of the map.
 		/// </summary>
@@ -230,20 +246,20 @@ Console.Out.WriteLine("AGENT AT ="+who.Where );
 			StringBuilder buf = new StringBuilder();
 
 			List<string> list = new List<string>();
-			for (int dt=0;dt<Tall;dt++) {
+			for (int row=0; row<Tall; row++) {
 				buf.Clear();
-				for (int dw = 0; dw < Wide; dw++) {
-					if (dw>0) buf.Append("/");
+				for (int col = 0; col < Wide; col++) {
+					if (col>0) buf.Append(STRING_PARTS_SEP);
 
-					Place place = Places[dw, dt];
+					Place place = Places[col, row];
 					buf.Append( HeightEnumTraits.Symbol( place.Height ));
 					buf.Append( FlagEnumTraits.Symbol( place.Flag ) );
 					if (place.Agent==null) {
-						buf.Append("__");
+						buf.Append(NO_AGENT_SYMBOL);
 					}
 					else { 
 						int indexOf = Agents.IndexOf( place.Agent );
-						buf.Append( indexOf.ToString("00"));
+						buf.Append( indexOf.ToString(AGENT_ID_FORMAT));
 					}
 				}
 				list.Add( buf.ToString() );
@@ -255,10 +271,40 @@ Console.Out.WriteLine("AGENT AT ="+who.Where );
 		/// Use strings to reconstruct map.
 		/// </summary>
 		/// <param name="source"></param>
-		void StringsAsMap( List<string> source ) {
+		public void StringsAsMap( List<string> source ) {
 
+			// prepare the tiles
+			Places = Create2DArray<Place>( CreatePlace, Wide, Tall );
+
+			for (int row=0;row<Tall;row++) {
+
+				string line = source[row];
+				string[] parts = line.Split( STRING_PARTS_SEP );
+
+				for (int col=0;col<Wide;col++) {
+
+					Place place = Places[col,row];
+					string part = parts[col];
+
+					// parse single location
+					place.Height = HeightEnumTraits.FromSymbol( part[0] );
+					place.Flag = FlagEnumTraits.FromSymbol( part[1] );
+
+					string symbol = ""+part[2]+part[3];
+					if (!symbol.Equals(NO_AGENT_SYMBOL)) { 
+
+						int agentId = 0;
+						try { agentId = int.Parse(symbol); }
+						catch (FormatException ex) { throw new FormatException("Invalid agent symbol ["+symbol+"] at ["+col+"/"+row+"]", ex); }
+
+						if (agentId>Agents.Count) 
+							throw new FormatException("No agent defined for id=["+agentId+"] at ["+col+"/"+row+"]");
+						place.Agent = Agents[ agentId ];
+					}
+				}
+
+			}
 		}
-
 
 	}
 }

@@ -12,5 +12,10 @@ namespace Realm {
 		static public string DumpLevelMap( LevelMap map ) {
 			return new Serializer().Serialize(map);
 		}
+
+		static public LevelMap ParseLevelMap( string content ) {
+			return new Deserializer().Deserialize<LevelMap>(content);
+		}
+
 	}
 }

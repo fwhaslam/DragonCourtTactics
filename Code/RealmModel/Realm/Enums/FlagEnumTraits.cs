@@ -5,6 +5,7 @@
 namespace Realm.Enums {
 
 	using System;
+	using System.Collections.Generic;
 
 	public class FlagEnumTraits {
 
@@ -15,10 +16,17 @@ namespace Realm.Enums {
 			'-','+','K','A','B'
 		};
 
+		static readonly List<char> SymbolList = new List<char>(Symbols);
+
 		static public int Count() { return Enum.GetNames(typeof(DirEnum)).Length; }
 
 		static public char Symbol(FlagEnum flag) {
 			return Symbols[(int)flag];
+		}
+
+		static public FlagEnum FromSymbol( char symbol) {
+			int value = SymbolList.IndexOf(symbol);
+			return (FlagEnum)value;
 		}
 	}
 
