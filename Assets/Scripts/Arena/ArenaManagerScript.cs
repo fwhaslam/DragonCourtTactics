@@ -29,8 +29,10 @@ namespace Arena {
 
         //internal LevelMap currentMap;
     
-        // map needs to redraw event
+        // map needs to redraw
         internal static UnityEvent<LevelMap> mapRedrawEvent = new UnityEvent<LevelMap>();
+        // new map has been loaded from file
+        internal static UnityEvent<LevelMap> mapLoadEvent = new UnityEvent<LevelMap>();
 
         static public ArenaManagerScript instance;
 
@@ -42,13 +44,15 @@ namespace Arena {
 		    if (instance != null) throw new ApplicationException("Cannot instantiate ArenaHandlerScript twice.");
 		    instance = this;
 
-		    mapRedrawEvent.AddListener( MapRedrawFunction );
+		    //mapRedrawEvent.AddListener( MapRedrawFunction );
+            //currentMap = PrepareLevel();
 
-            currentMap = PrepareLevel();
             BuildMaterials();
 
+            mapLoadEvent.Invoke( RealmFactory.SimpleTerrain( 12, 12 ) );      // load default map
+
             //BuildLevel( currentMap );
-            mapRedrawEvent.Invoke( currentMap );
+            //mapRedrawEvent.Invoke( currentMap );
 	    }
 
         /// <summary>
@@ -56,6 +60,7 @@ namespace Arena {
         /// </summary>
 	    public void OnEnable() {
             mapRedrawEvent.AddListener( MapRedrawFunction );
+            mapLoadEvent.AddListener( LoadMapFunction );
 	    }
 
         /// <summary>
@@ -63,6 +68,7 @@ namespace Arena {
         /// </summary>
 	    public void OnDisable() {
             mapRedrawEvent.RemoveListener( MapRedrawFunction );
+           mapLoadEvent.RemoveListener( LoadMapFunction );
 	    }
 
     //=======================================================================================================================
@@ -124,7 +130,7 @@ namespace Arena {
             return newText;
         }
     
-    //=======================================================================================================================
+ //=======================================================================================================================
 
         /// <summary>
         /// Proxy to Global values.
@@ -134,16 +140,28 @@ namespace Arena {
             set { GlobalValues.currentMap = value; }
         }
 
-        internal LevelMap PrepareLevel() {
+    //    internal LevelMap PrepareLevel() {
 
 
-            if (currentMap==null) {
-    print("Creating New Map");
-                currentMap = RealmFactory.SimpleTerrain( 15, 15 );
-            }
+    //        if (currentMap==null) {
+    //print("Creating New Map");
+    //            currentMap = RealmFactory.SimpleTerrain( 15, 15 );
+    //        }
 
-            return currentMap;
-	    }
+    //        return currentMap;
+	   // }
+
+ //=======================================================================================================================
+
+        /// <summary>
+        /// Delegate for loading a new map.
+        /// </summary>
+        public void LoadMapFunction(LevelMap newMap ) {
+            EditToolsMenuScript.tileSelectEvent.Invoke( null );
+            currentMap = newMap;
+            mapRedrawEvent.Invoke( newMap );
+            //RedrawMap( newMap );
+		}
 
         /// <summary>
         /// Delegate for global map redraw events.
@@ -192,7 +210,11 @@ namespace Arena {
                     // material selection
                     int tileId = (7*ix+5*iy) % materials.Length;
                    //int tileId = (7*ix+5*iy) % tiles.Length;
+                    var material = materials[tileId];
 
+                    // tile info
+                    var place = level.Places[ix,iy];
+ 
                     //GameObject tile = Instantiate( tiles[tileId] );
                     GameObject tile =  GameObject.CreatePrimitive(PrimitiveType.Cube);
                     tile.name = "Cube("+ix+","+iy+")";
@@ -201,7 +223,7 @@ namespace Arena {
 
                     // add tile script with  reference information
 				    TileScript info = tile.AddComponent<TileScript>();
-				    info.SetRef( this, currentMap.Places[ix,iy], c.x-ix, c.y-iy, materials[tileId] );
+				    info.SetRef( this, place, c.x-ix, c.y-iy, material );
 
                     // cleanup
                     info.RedrawTile();

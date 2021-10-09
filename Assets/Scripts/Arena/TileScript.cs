@@ -32,7 +32,7 @@ namespace Arena {
 
 	    public void OnPointerDown(PointerEventData eventData) {
     //print("CLICKED=="+transform.name);
-		    EditToolsMenuScript.SelectTile( this );
+		    EditToolsMenuScript.TileSelect( this );
 	    }
 
         public void TakeCursor( GameObject cursor ) {

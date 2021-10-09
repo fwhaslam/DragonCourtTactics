@@ -271,8 +271,8 @@ print("Remove AGENT!");
     /// When a tile is clicked, invoke this method.
     /// </summary>
     /// <param name="who"></param>
-    static public void SelectTile( TileScript who ) {
-print("SelectTile = " + who.Place.Where);
+    static public void TileSelect( TileScript who ) {
+print("SelectTile = " + who?.Place?.Where);
 		tileSelectEvent.Invoke( who );
     }
 
@@ -282,7 +282,7 @@ print("SelectTile = " + who.Place.Where);
     /// <param name="nextTile"></param>
     void DoUpdateWorkingTile( TileScript nextTile ) {
 
-print("DoUpdateTile=" + nextTile.Place.Where);
+print("DoUpdateTile=" + nextTile?.Place?.Where);
 		// no work!
 		//if ( workingTile==nextTile ) return;
 
@@ -296,14 +296,17 @@ print("DoUpdateTile=" + nextTile.Place.Where);
 
         // update menu & mark with cursor
         workingTile = nextTile;
-        Place place = workingTile.Place;
+        if (workingTile!=null) {
 
-        // update cursor for new tile
-        workingTile.TakeCursor( cursor );
+            Place place = workingTile.Place;
 
-        // setting menu values
-        flagMenu.value = (int)place.Flag;
-		//agentMenu.value = place.Agent.Type.Index;
+            // update cursor for new tile
+            workingTile.TakeCursor( cursor );
+
+            // setting menu values
+            flagMenu.value = (int)place.Flag;
+            //agentMenu.value = place.Agent.Type.Index;
+        }
 
          UpdateTileLabels();
 	}

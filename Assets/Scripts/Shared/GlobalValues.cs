@@ -19,6 +19,10 @@ namespace Shared {
 		static public readonly string EntrySceneName = "_MainScene";
 		static public readonly string EditSceneName = "EditScene";
 		static public readonly string PlaySceneName = "PlayScene";
+
+		// placeholder for save puzzle folder location. ( relative to Project folder )
+		static public readonly string SavedPuzzlesFolder = "Assets\\Puzzles";
+		static public readonly string PuzzleFileExtension = "_dctpzl.yml";
 	}
 }
 

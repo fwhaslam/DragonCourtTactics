@@ -1,0 +1,24 @@
+﻿Title: Boggle Da Goblins
+Image: pic1.png
+Wide: 7
+Tall: 6
+Agents:
+- Name: Goblin
+  Face: South
+  Status: Alert
+  Faction: 1
+- Name: Goblin
+  Face: West
+  Status: Alert
+  Faction: 1
+Map:
+- 1G__/P+__/1.__/1.00/1.__/1C__/W.__
+- 1G__/P.__/1.__/1.__/1.__/1.__/W.__
+- 1L__/P.__/1.__/1.__/1.01/1.__/3.__
+- 1.__/W.__/w.__/1.__/W.__/W.__/3.__
+- 1.__/1.__/1.__/1.__/1.__/W.__/3S__
+- 1E__/W.__/W.__/1.__/1.__/W.__/W.__
+Text:
+  Start: Two goblins, trap them.
+  Done: good job, here is some money.
+...

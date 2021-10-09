@@ -22,6 +22,7 @@ namespace EditUI {
 		public GameObject pickerButton;
 		public GameObject animatorOwner;
 		public string animBoolKey;
+		public GameObject modalPanel;		// fill to make the popup modal
 
 		internal Camera viewCam;
 		internal RectTransform panelRect;
@@ -91,8 +92,7 @@ print(">>>> Popup Picker Clicked name=" + gameObject.name + "   mark=" + (++mark
 
 			if (IsShowing()) return;
 
-			//transform.position = pickerButton.transform.position;
-			//gameObject.SetActive(true);
+			if (modalPanel!=null) modalPanel.SetActive(true);
 
 			showHideAnim.SetBool( animBoolKey, true );
 			UnityTools.SetSelected( gameObject );
@@ -101,8 +101,8 @@ print(">>>> Popup Picker Clicked name=" + gameObject.name + "   mark=" + (++mark
 		public void Hide() {
 
 			if (!IsShowing()) return;
-
-			//gameObject.SetActive(false);
+			
+			if (modalPanel!=null) modalPanel.SetActive(false);
 
 			showHideAnim.SetBool( animBoolKey, false );
 			//UnityTools.SetSelected( null );			// not right, I don't know how to 'unselect', but apparently the OnDeselect event occurs after

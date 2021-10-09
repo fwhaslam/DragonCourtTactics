@@ -1,0 +1,40 @@
+﻿Title: Let Sleeping Gobs Lie
+Image: pic1.png
+Wide: 7
+Tall: 6
+Agents:
+- Name: Goblin
+  Face: South
+  Status: Sleep
+  Faction: 1
+- Name: Goblin
+  Face: West
+  Status: Sleep
+  Faction: 1
+- Name: Goblin
+  Face: East
+  Status: Sleep
+  Faction: 1
+- Name: Goblin
+  Face: South
+  Status: Sleep
+  Faction: 1
+- Name: Goblin
+  Face: South
+  Status: Sleep
+  Faction: 1
+- Name: Goblin
+  Face: North
+  Status: Sleep
+  Faction: 1
+Map:
+- W.__/1.__/1.__/1.05/1.__/1C__/W.__
+- 2C__/1.04/1.__/1.__/1.__/2.__/1.__
+- 1.__/1.00/1.__/2.__/1.__/1.__/1.__
+- 1.__/1.__/1.__/1.__/1.__/1.__/1.__
+- 1.__/2.__/1.__/1.__/1.__/1.03/1C__
+- 1E__/1.__/1.__/1.__/1.01/2.02/W.__
+Text:
+  Start: Dont touch nuthin
+  Done: good job, here is some money.
+...

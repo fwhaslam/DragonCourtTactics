@@ -1,0 +1,34 @@
+﻿Title: Goblin Da Baby
+Image: pic1.png
+Wide: 6
+Tall: 6
+Agents:
+- Name: Goblin
+  Face: South
+  Status: Alert
+  Faction: 1
+Map:
+- 1H__/1.__/1.00/1D__/1.__/1.__
+- 1.__/P.__/1.__/W.__/1.__/1S__
+- 1.__/1.__/1.__/W.__/W.__/W.__
+- 1.__/W.__/1.__/W.__/W.__/W.__
+- 1.__/1.__/1.__/W.__/W.__/W.__
+- 1E__/W.__/W.__/W.__/W.__/W.__
+Text:
+  Start: Adventurer, my name is Corin Thea.  
+    On behalf of the City Watch I am seeking your help.  
+    There have been incidents with small monsters 
+    cropping up throughout the duchy.  
+    Imps and ratfolk, ghosts and goblins.  
+    A child was stolen near Olivers Creek from a farm family.  
+    The watch is short handed right now, 
+    so we are hiring cheap mercenaries like you 
+    to take care of these things.
+    I know that you have no training, 
+    but goblins are cowardly creatures.  
+    You should be able to intimidate the beast into 
+    returning the girl.
+    While you are at it, 
+    see if you can find out why there is so much trouble right now.
+  Done: good job, here is some money.
+...

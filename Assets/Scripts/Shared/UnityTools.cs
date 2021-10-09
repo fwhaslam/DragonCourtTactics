@@ -4,6 +4,7 @@
 
 namespace Shared {
 	using System;
+	using System.IO;
 
 	using UnityEngine;
 	using UnityEngine.EventSystems;
@@ -42,6 +43,10 @@ namespace Shared {
 		/// <param name="who"></param>
 		static public void SetSelected( GameObject who ) { 
 			EventSystem.current.SetSelectedGameObject(who);
+		}
+
+		static public string FixFilePath( string path ) {
+			return path.Replace( '/', Path.DirectorySeparatorChar );
 		}
 
 		/// <summary>
