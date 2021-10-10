@@ -9,10 +9,10 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{E3A217D9-C441-04A3-820A-E754935A19AB}</ProjectGuid>
+    <ProjectGuid>{369D66D6-AF4A-D4CA-5E6D-B6AF8D27BDB4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>PlayModeTests</AssemblyName>
+    <AssemblyName>PlayModeTestAssembly</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -56,10 +56,10 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Editor\PlayModeTests\NewTestScript.cs" />
+    <Compile Include="Assets\ScriptsTest\PlayModeTests\EditToolsMenuScriptTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Editor\PlayModeTests\PlayModeTests.asmdef" />
+    <None Include="Assets\ScriptsTest\PlayModeTests\PlayModeTestAssembly.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -670,6 +670,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="PlayAssembly.csproj">
+      <Project>{A8670552-D8C8-4E80-B7B4-6C29DF051DFA}</Project>
+      <Name>PlayAssembly</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

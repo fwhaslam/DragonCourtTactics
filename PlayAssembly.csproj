@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\Shared\GlobalValues.cs" />
     <Compile Include="Assets\Scripts\Examples\HoverMouseScript.cs" />
     <Compile Include="Assets\Scripts\Shared\Touchable.cs" />
+    <Compile Include="Assets\Scripts\AssemblyInfo.cs" />
     <Compile Include="Assets\Scripts\EditUI\DialogBoxScript.cs" />
     <Compile Include="Assets\Scripts\Shared\UnityTools.cs" />
     <Compile Include="Assets\Scripts\Arena\ArenaManagerScript.cs" />

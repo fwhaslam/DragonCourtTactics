@@ -802,13 +802,13 @@
       <Project>{A8670552-D8C8-4E80-B7B4-6C29DF051DFA}</Project>
       <Name>PlayAssembly</Name>
     </ProjectReference>
-    <ProjectReference Include="EditModeTests.csproj">
-      <Project>{02BB5754-7041-04C7-1D85-4C065341828D}</Project>
-      <Name>EditModeTests</Name>
+    <ProjectReference Include="EditModeTestAssembly.csproj">
+      <Project>{7248A2A5-B07E-5192-ECD6-79DF8CF459C3}</Project>
+      <Name>EditModeTestAssembly</Name>
     </ProjectReference>
-    <ProjectReference Include="PlayModeTests.csproj">
-      <Project>{E3A217D9-C441-04A3-820A-E754935A19AB}</Project>
-      <Name>PlayModeTests</Name>
+    <ProjectReference Include="PlayModeTestAssembly.csproj">
+      <Project>{369D66D6-AF4A-D4CA-5E6D-B6AF8D27BDB4}</Project>
+      <Name>PlayModeTestAssembly</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
