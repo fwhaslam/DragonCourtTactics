@@ -2,15 +2,13 @@
 # TASKS
 =======
 
-[done] load game dialog
+[Done] Added one functional PlayMode Test
 
 save game dialog
 
 Cleanup modal dialog appearance
 
 cleanup edit options menu dialog
-
-Figure out why I am stuck at .net4.7.1, try to update to 5+
 
 Move RealmModel to a separate project.
 
@@ -30,6 +28,9 @@ create stupid commander in realm
 
 # OBJECTIVES
 ============
+
+[Done] Figure out why I am stuck at .net4.7.1, try to update to 5+
+* Unity does not support .net5, it could come out at any time though
 
 create unity play test suite
 
