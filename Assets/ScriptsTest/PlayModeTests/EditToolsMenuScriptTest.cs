@@ -48,18 +48,17 @@ public class EditToolsMenuScriptTest {
         // it found initial resources
         IsNull( script.workingTile );
 
-        IsNotNull( script.flagMenu );
         IsNotNull( script.unitTypeDropdown );
         IsNotNull( script.unitFaceDropdown );
         IsNotNull( script.unitGroupDropdown );
         IsNotNull( script.unitStateDropdown );
+        IsNotNull( script.tileFlagDropdown );
 
         AreEqual( 0, script.unitStateDropdown.value );
 
         IsNotNull( script.mapTitleLabel );
         IsNotNull( script.mapSizeLabel );
         IsNotNull( script.tileTypeLabel );
-        IsNotNull( script.tileFlagLabel );
 
         AreEqual( "Peasant/Goblin/Skeleton/Ghost", 
             String.Join( "/", script.unitTypeOptions ));
@@ -69,6 +68,8 @@ public class EditToolsMenuScriptTest {
             String.Join( "/", script.unitGroupOptions ));
         AreEqual( "Active/Alert/Stunned/Sleep", 
             String.Join( "/", script.unitStateOptions ));
+       AreEqual( "None/Entry/Door/Hostage/Chest/Sack/Lever/Switch/Gears/Pitfall/Masher/Lower/Raise/Spikes/Arrows/Boulder", 
+            String.Join( "/", script.tileFlagOptions ));
 
         // end of test
         yield return null;
