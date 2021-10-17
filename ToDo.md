@@ -2,29 +2,48 @@
 # TASKS
 =======
 
-[Done] Added one functional PlayMode Test
+flag icon to turn flags on/off
 
-save game dialog
+create play scene, load from edit, exit back to edit
 
-Cleanup modal dialog appearance
 
-cleanup edit options menu dialog
+[Done] save game dialog
+
+[Somwehat Done] Cleanup modal dialog appearance
+* modeal dialog field sizes are fixed
+* modal dialog colors need some work
+
+[Done] cleanup edit options menu dialog
 
 Move RealmModel to a separate project.
 
 Integrate verbose with RealmModel ( after .net5 change? )
 
-create play scene, load from edit, exit back to edit
-
 better 'wall' tiles
 
 better floor tiles
 
-icons + models for flags
+better camera angle and zoom 
+* as you go up, look down more
+* ipad support pinch zoom
+* pc supports wheel zoom
+
+better select and turning
+* single click in empty space will 'drag'
+* single click on agent, or double click will select/deselect
+* prettier tile/agent select icon
+
+
+[Done] icons + models for flags
+* flags display as transparent hovering icons over tiles
 
 create play structure in realm
 
 create stupid commander in realm
+
+can we put the test tools from PlayModeTests into EditModeTests?  ( and still use them in PlayModeTests? )
+
+draw flag objects in tiles for: Lever, Chest, Sack, Hostage, Door, Entry, etc.
 
 # OBJECTIVES
 ============

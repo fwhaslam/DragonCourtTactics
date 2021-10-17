@@ -25,7 +25,7 @@ obj/
 bin/
 .vsconfig
 Assets/_DLLs/
-InitTestScene*.unity
+**/InitTestScene*.unity
 
 # ignoring auto-generate unity folders
 UIElementsSchema/
