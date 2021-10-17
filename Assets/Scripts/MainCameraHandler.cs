@@ -18,7 +18,7 @@ using UnityEngine.UI;
 public class MainCameraHandler : MonoBehaviour {
 
     public float rotateSpeed,rotateLerpSpeed,startAngle;
-    public float minZoom,maxZoom,startZoom,wheelZoomSpeed,pinchZoomSpeed;
+    public float minZoom,maxZoom,startZoom,wheelZoomSpeed,pinchZoomSpeed,keyDragSpeed;
 
 	public Slider zoomSlider;
 
@@ -102,8 +102,8 @@ public class MainCameraHandler : MonoBehaviour {
     internal void HandleCameraKeyboard() {
 //print("Handle Camera Keyboard");
 
-        if (Input.GetKey(KeyCode.W)) MoveCameraFocus( 0, +1f );
-        if (Input.GetKey(KeyCode.S)) MoveCameraFocus( 0, -1f );
+        if (Input.GetKey(KeyCode.S)) MoveCameraFocus( 0, +1f );
+        if (Input.GetKey(KeyCode.W)) MoveCameraFocus( 0, -1f );
 
         if (Input.GetKey(KeyCode.A)) MoveCameraFocus( +1f, 0f );
         if (Input.GetKey(KeyCode.D)) MoveCameraFocus( -1f, 0f );
@@ -119,7 +119,7 @@ public class MainCameraHandler : MonoBehaviour {
     /// <param name="horz"></param>
     /// <param name="vert"></param>
     internal void MoveCameraFocus( float horz, float vert ) {
-        DragCamera( new Vector3( horz, vert, 0f ) );
+        DragCamera( new Vector3( horz*keyDragSpeed, vert*keyDragSpeed, 0f ) );
 	}
 
 //======================================================================================================================
@@ -169,6 +169,14 @@ public class MainCameraHandler : MonoBehaviour {
 
 	}
 
+    /// <summary>
+    /// Used to rotate the flag layer.
+    /// </summary>
+    /// <returns></returns>
+    public float GetCameraAngle() {
+        return angle;
+	}
+
 
 //======================================================================================================================
 
@@ -176,7 +184,7 @@ public class MainCameraHandler : MonoBehaviour {
     /// Used with 'drag' logic.
     /// </summary>
     /// <param name="delta"></param>
-    internal void DragCamera(  Vector3 delta) {
+    internal void DragCamera( Vector3 delta ) {
 
         Vector2 forward = delta.y * MathTools.DegreesToPosition( angle );
         Vector2 sideway = delta.x * MathTools.DegreesToPosition( angle+90 );

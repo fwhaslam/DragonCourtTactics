@@ -12,6 +12,7 @@ namespace Arena {
 
     using static Shared.GlobalValues;
     using static Shared.UnityTools;
+    using static Tools.MaterialTool;
 
     /// <summary>
     /// Mange appearance and actions on a single Tile.
@@ -19,6 +20,7 @@ namespace Arena {
     public class TileScript : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
         internal GameObject token = null;
+        internal GameObject flag = null;
         
         // when a tile is dragged, move the camera :: function( V3 start, V3 delta )
         static internal readonly UnityEvent<Vector3,Vector3> tileDragEvent = new UnityEvent<Vector3,Vector3>();
@@ -54,9 +56,7 @@ namespace Arena {
 		}
         
         public void RedrawTile() {
-    //print("REDRAW="+name);
-
-            var flag = Place.Flag;
+print("REDRAW="+name);
 
             // change 'cube' size
             var top = CalcZ( Place.Height );
@@ -111,16 +111,49 @@ print(">>>>>>>>>>>>>>>> NEW TOKEN");
             GetComponent<MeshRenderer>().material =  PickMaterial( height );
 	    }
 
-        internal void FixFlag( FlagEnum flag, float top ) {
-            // TODO:
+        /// <summary>
+        /// Create flag as a billboard hovering over the tiles.
+        /// </summary>
+        /// <param name="flagType"></param>
+        /// <param name="top"></param>
+        internal void FixFlag( FlagEnum flagKey, float top ) {
+
+print("FIXING FLAG = "+flagKey);
+            if (flag==null) {
+
+                flag = new GameObject( "Flag"+Key() );
+                flag.transform.localEulerAngles = new Vector3( 90f, 0f, 0f );
+
+				flag.AddComponent<SpriteRenderer>();
+				flag.AddComponent<BillboardSprite>();
+
+				UseParent( gameObject, flag );
+            }
+
+            flag.transform.localPosition  = new Vector3( 0, 0, 1.2f + top );  // relative to cube
+            flag.transform.localScale = Owner.flagScale;    //new Vector3(0.3f,0.3f,0.3f);
+
+            var asSprite = flag.GetComponent<SpriteRenderer>();
+            asSprite.sprite = FlagSymbolsScript.GetFlagSprite( flagKey );
+            asSprite.color = Owner.flagShade;   // new Color( 1f,1f,1f, 0.25f );
 		}
 
+        /// <summary>
+        /// Where is the 'top' of this tile?
+        /// </summary>
+        /// <param name="height"></param>
+        /// <returns></returns>
         internal float CalcZ( HeightEnum height ) {
             if (height==HeightEnum.Pit) return 0.2f;
             if (height==HeightEnum.Wall) return 3f;
             return 0.2f + (int)height * 0.4f;
 	    }
 
+        /// <summary>
+        /// What material should we use for the tile?
+        /// </summary>
+        /// <param name="height"></param>
+        /// <returns></returns>
         internal Material PickMaterial( HeightEnum height ) {
             if (height==HeightEnum.Pit) return ArenaManagerScript.instance.hidden;
             if (height==HeightEnum.Wall) return ArenaManagerScript.instance.wall;
@@ -169,6 +202,12 @@ print(">>>>>>>>>>>>>>>> NEW TOKEN");
 
         // material for 'pit' level tiles
         public Material Floor {  get; internal set; }
+
+        /// <summary>
+        /// label to identify objects.
+        /// </summary>
+        /// <returns></returns>
+        internal string Key() {  return "("+Place.Where.X+","+Place.Where.Y+")";}
 
     //======================================================================================================================
 

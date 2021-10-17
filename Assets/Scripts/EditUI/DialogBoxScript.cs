@@ -70,16 +70,17 @@ public class DialogBoxScript : MonoBehaviour {
 
     internal Action onConfirm,onDecline,onOther;
 
-    internal static int selectedFileIndex;
-    internal UnityAction<int> fielSelectListener = delegate( int value ) {  selectedFileIndex = value; };
-
+    internal bool isSaveDialog;
+    internal int selectedFileIndex;
+    internal List<string> filenamesForDialog;
+ 
 //======================================================================================================================
 
     /// <summary>
     /// One time changes
     /// </summary>
 	public void Awake() {
-        this.filenameDD.onValueChanged.AddListener( fielSelectListener );
+        this.filenameDD.onValueChanged.AddListener( OnFileSelect );
 	}
 
 //======================================================================================================================
@@ -91,7 +92,40 @@ public class DialogBoxScript : MonoBehaviour {
 	/// <param name="image"></param>
 	/// <param name="message"></param>
 	/// <param name="confirm"></param>
-	public void ShowQuestionDialog( string title, Sprite image, string message, Action confirm ) {
+	public void ShowAcknowledgeDialog( string title, Sprite image, string message ) {
+
+        // hide non-default panels, move dialog, activate modal panel
+        Prep();
+
+        if (title!=null) { 
+            this.titleTxt.gameObject.SetActive(true);
+            this.titleTxt.text = title;
+        }
+
+        // use horz layout
+        this.horzLayout.gameObject.SetActive(true);
+
+        if (image!=null) { 
+            this.horzImage.gameObject.SetActive( true );
+            this.horzImage.sprite = image;
+        }
+        this.horzTxt.text = message;
+
+        // setup buttons and functions
+        this.confirmBtn.gameObject.SetActive(true);
+
+        // all ready, show it!
+        Show();
+	}
+    
+	/// <summary>
+	/// Uses Horizontal layout, image is optional.  Other button is unused.
+	/// </summary>
+	/// <param name="title"></param>
+	/// <param name="image"></param>
+	/// <param name="message"></param>
+	/// <param name="confirm"></param>
+	public void ShowConfirmDialog( string title, Sprite image, string message, Action confirm ) {
 
         // hide non-default panels, move dialog, activate modal panel
         Prep();
@@ -115,7 +149,6 @@ public class DialogBoxScript : MonoBehaviour {
 
         this.confirmBtn.gameObject.SetActive(true);
         this.declineBtn.gameObject.SetActive(true);
-        this.otherBtn.gameObject.SetActive(false);
 
         // all ready, show it!
         Show();
@@ -138,24 +171,68 @@ public class DialogBoxScript : MonoBehaviour {
 
         // use file layout
         this.fileLayout.gameObject.SetActive(true);
-        
+        this.filenameDD.gameObject.SetActive(true);
+ 
         this.filenameDD.ClearOptions();
         this.filenameDD.AddOptions( filenames );
+        this.filenamesForDialog = filenames;
   
         // setup buttons and functions
         this.onConfirm = confirm;
 
         this.confirmBtn.gameObject.SetActive(true);
         this.declineBtn.gameObject.SetActive(true);
-        this.otherBtn.gameObject.SetActive(false);
+
+        // all ready, show it!
+        Show();
+	}
+    
+    /// <summary>
+    /// Uses Horizontal layout, image is optional.  Other button is unused.
+    /// </summary>
+    /// <param name="title"></param>
+    /// <param name="image"></param>
+    /// <param name="message"></param>
+    /// <param name="confirm"></param>
+    public void ShowFileSaveDialog( List<string> filenames, Action confirm ) {
+
+        // hide non-default panels, move dialog, activate modal panel
+        Prep();
+
+        this.titleTxt.gameObject.SetActive(true);
+        this.titleTxt.text = "Select Filename to Save";
+
+        // use file layout
+        this.fileLayout.gameObject.SetActive(true);
+        this.filenameDD.gameObject.SetActive(true);
+        this.fileSavePanel.gameObject.SetActive(true);
+ 
+        this.filenameDD.ClearOptions();
+        this.filenameDD.AddOptions( filenames );
+        this.filenamesForDialog = filenames;
+
+        this.isSaveDialog = true;
+  
+        // setup buttons and functions
+        this.onConfirm = confirm;
+
+        this.confirmBtn.gameObject.SetActive(true);
+        this.declineBtn.gameObject.SetActive(true);
 
         // all ready, show it!
         Show();
 	}
 
-    public int GetSelectedFileIndex() {
-        return selectedFileIndex;
+    public void OnFileSelect(int value) {
+         selectedFileIndex = value; 
+        if (isSaveDialog) this.filenameInp.text = filenamesForDialog[value];
 	}
+
+    public string GetSelectedFilename() {
+        if (isSaveDialog) return this.filenameInp.text;
+        return filenamesForDialog[selectedFileIndex];
+	}
+
     
 //======================================================================================================================
 
@@ -165,6 +242,7 @@ public class DialogBoxScript : MonoBehaviour {
     internal void Prep() {
 
         selectedFileIndex = 0;
+        this.isSaveDialog = false;
 
         this.titleTxt.gameObject.SetActive( false );
 
@@ -176,6 +254,7 @@ public class DialogBoxScript : MonoBehaviour {
         this.vertImage.gameObject.SetActive( false );
         this.fileSavePanel.gameObject.SetActive( false );
 
+        this.declineBtn.gameObject.SetActive( false );
         this.otherBtn.gameObject.SetActive( false );
 
         this.onConfirm = null;

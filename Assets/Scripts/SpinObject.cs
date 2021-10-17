@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class SpinObject : MonoBehaviour {
  
-    public Vector3 RotateAmount;  // degrees per second to rotate in each axis. Set in inspector.
+    public Vector3 RotateAmount = Vector3.zero;  // degrees per second to rotate in each axis. Set in inspector.
    
     // Update is called once per frame
     void Update () {

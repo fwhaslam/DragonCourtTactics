@@ -24,34 +24,19 @@ public class GameHandlerScript : MonoBehaviour {
     public string puzzlesFolder = Shared.GlobalValues.SavedPuzzlesFolder;
 
     internal DialogBoxScript dialogScript;
-    internal List<string> filenames;
 
 	public void Awake() {
 		dialogScript = dialogBox.GetComponent<DialogBoxScript>();
 	}
 
-	// Start is called before the first frame update
-	void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
  //======================================================================================================================
-
-
 
     /// <summary>
     /// Show a confirm dialog box, and if true then switch the _mainScene.
     /// </summary>
     public void ConfirmAndExit() {
 
-        dialogScript.ShowQuestionDialog( "Exit Edit Mode", null, "Are you done with edit mode?", 
+        dialogScript.ShowConfirmDialog( "Exit Edit Mode", null, "Are you done with edit mode?", 
             delegate(){ChangeScene( Shared.GlobalValues.EntrySceneName); }
         );
 
@@ -62,19 +47,42 @@ public class GameHandlerScript : MonoBehaviour {
     /// </summary>
     public void LoadPuzzle() {
 
-        ReadFilenamesFromPuzzleFolder( GetPuzzleFolderPath() );
+        List<string> filenames = ReadFilenamesFromPuzzleFolder( GetPuzzleFolderPath() );
 
-        dialogScript.ShowFileLoadDialog( filenames, 
-            delegate(){ LoadSelectedFile(); }
-        );
+        //dialogScript.ShowFileLoadDialog( filenames, delegate(){ LoadSelectedFile(); } );
+        dialogScript.ShowFileLoadDialog( filenames, LoadSelectedFile );
 
 	}
-    
+
+    /// <summary>
+    /// Show a confirm dialog box, and if true then switch the _mainScene.
+    /// </summary>
+    public void SavePuzzle() {
+
+        List<string> filenames = ReadFilenamesFromPuzzleFolder( GetPuzzleFolderPath() );
+
+        //dialogScript.ShowFileLDialog( filenames, delegate(){ LoadSelectedFile(); } );
+        dialogScript.ShowFileSaveDialog( filenames, SaveSelectedFile );
+
+	}
+
+    /// <summary>
+    /// Show a confirm dialog box, and if true then switch the _mainScene.
+    /// </summary>
+    public void ResetPuzzle() {
+
+        dialogScript.ShowConfirmDialog( "Rest Puzzle?", null, 
+            "Are you sure you want to discard the current puzzle and reset to default ?",  
+            DoResetPuzzle );
+	}
+
+//======================================================================================================================
+
     internal string GetPuzzleFolderPath() {
         return Shared.GlobalValues.SavedPuzzlesFolder;
 	}
 
-    internal void ReadFilenamesFromPuzzleFolder( string folderPath ) {
+    internal List<string> ReadFilenamesFromPuzzleFolder( string folderPath ) {
 
 
         var info = new DirectoryInfo( UnityTools.FixFilePath(folderPath) );
@@ -93,23 +101,39 @@ print("FILEINFO = "+file.FullName );
             }
 		}
         
-        this.filenames = filenames;
+        return filenames;
 	}
 
     internal void LoadSelectedFile() {
 
-        var fileIx = dialogScript.GetSelectedFileIndex();
-        var filename = filenames[ fileIx ];
-
+        var filename = dialogScript.GetSelectedFilename();
         var filePath = GetPuzzleFolderPath() + "/" + filename + GlobalValues.PuzzleFileExtension;
-        var content = File.ReadAllText( UnityTools.FixFilePath( filePath ) );
-print("Loaded File = "+content);
 
+        var content = File.ReadAllText( UnityTools.FixFilePath( filePath ) );
         var levelMap = RealmManager.ParseLevelMap( content );
+
         ArenaManagerScript.mapLoadEvent.Invoke( levelMap );
 	}
 
- //======================================================================================================================
+    internal void SaveSelectedFile() {
+
+        var filename = dialogScript.GetSelectedFilename();
+        var filePath = GetPuzzleFolderPath() + "/" + filename + GlobalValues.PuzzleFileExtension;
+
+        var content = RealmManager.DumpLevelMap( GlobalValues.currentMap );
+        File.WriteAllText( filePath, content );
+
+       dialogScript.ShowAcknowledgeDialog( null, null, "Save Complete ["+filename+"]" );
+	}
+
+    internal void DoResetPuzzle() {
+
+        // tell arena handler to 'reset'
+        ArenaManagerScript.mapLoadEvent.Invoke( null );
+
+	}
+
+//======================================================================================================================
 
     /// <summary>
     /// Change to another scene.

@@ -6,32 +6,31 @@ using Arena;
 
 using Realm;
 using Realm.Enums;
-
 using System;
-
 using System.Collections.Generic;
 
 using TMPro;
-
 using UnityEngine;
 using UnityEngine.Events;
-
-using static Shared.GlobalValues;
 
 /// <summary>
 /// This handles tile editing and menu updates for Edit Scene.
 /// </summary>
+
 public class EditToolsMenuScript : MonoBehaviour {
 
     public GameObject cursor;
 
 	internal TileScript workingTile;
-    internal TMP_Dropdown flagMenu, 
-        unitTypeDropdown, unitFaceDropdown, unitGroupDropdown, unitStateDropdown ;
+    internal TMP_Dropdown 
+        unitTypeDropdown, unitFaceDropdown, unitGroupDropdown, unitStateDropdown,
+        tileFlagDropdown;
     internal TMP_Text mapTitleLabel,
-        mapSizeLabel,tileTypeLabel,tileFlagLabel;
+        mapSizeLabel,tileTypeLabel;
 
-    internal List<string> unitTypeOptions,unitFaceOptions,unitGroupOptions,unitStateOptions;
+    internal List<string> 
+        unitTypeOptions,unitFaceOptions,unitGroupOptions,unitStateOptions,
+        tileFlagOptions;
 
     // single tile change event
     internal static UnityEvent<TileScript> tileSelectEvent = new UnityEvent<TileScript>();
@@ -43,17 +42,18 @@ public class EditToolsMenuScript : MonoBehaviour {
         
         mapSizeLabel = GameObject.Find("MapSizeLabel").GetComponent<TMP_Text>();
         tileTypeLabel = GameObject.Find("TileTypeLabel").GetComponent<TMP_Text>();
-        tileFlagLabel = GameObject.Find("TileFlagLabel").GetComponent<TMP_Text>();
 
         unitTypeDropdown = GameObject.Find("UnitTypeDD").GetComponent<TMP_Dropdown>();
         unitFaceDropdown = GameObject.Find("UnitFaceDD").GetComponent<TMP_Dropdown>();
         unitGroupDropdown = GameObject.Find("UnitGroupDD").GetComponent<TMP_Dropdown>();
         unitStateDropdown = GameObject.Find("UnitStateDD").GetComponent<TMP_Dropdown>();
+        tileFlagDropdown = GameObject.Find("TileFlagDD").GetComponent<TMP_Dropdown>();
 
         FixUnitTypeOptions();
         FixUnitFaceOptions();
         FixUnitGroupOptions();
         FixUnitStateOptions();
+        FixTileFlagOptions();
     }
     
     /// <summary>
@@ -75,12 +75,7 @@ public class EditToolsMenuScript : MonoBehaviour {
 	// Start is called after Awake/Enable, but before any Update
 	public void Start() {
 
-        flagMenu = GameObject.Find("FlagPicker").GetComponent<TMP_Dropdown>();
-
 		// fill in options on menus
-		flagMenu.ClearOptions();
-		flagMenu.AddOptions(new List<string>(Enum.GetNames(typeof(FlagEnum))));
-
         unitTypeDropdown.gameObject.SetActive(false);
         unitTypeDropdown.ClearOptions();
         unitTypeDropdown.AddOptions( unitTypeOptions );
@@ -97,11 +92,15 @@ public class EditToolsMenuScript : MonoBehaviour {
         unitStateDropdown.ClearOptions();
         unitStateDropdown.AddOptions( unitStateOptions );
 
+        //tileFlagDropdown.gameObject.SetActive(true);
+        tileFlagDropdown.ClearOptions();
+        tileFlagDropdown.AddOptions( tileFlagOptions );
+
         // add listeners
-        flagMenu.onValueChanged.AddListener(delegate {DoChangeFlag();});
         unitTypeDropdown.onValueChanged.AddListener(delegate {DoChangeUnitType();});
         unitFaceDropdown.onValueChanged.AddListener(delegate {DoChangeUnitFace();});
         unitGroupDropdown.onValueChanged.AddListener(delegate {DoChangeUnitGroup();});
+        tileFlagDropdown.onValueChanged.AddListener(delegate {DoChangeTileFlag();});
 	}
 
 
@@ -170,7 +169,18 @@ public class EditToolsMenuScript : MonoBehaviour {
 		}
         unitStateOptions = options;
 	}
+
+    internal void FixTileFlagOptions() {
+        List<string> options = new List<string>();
+        foreach ( FlagEnum value in Enum.GetValues(typeof(FlagEnum))) {
+            options.Add( value.ToString() );
+		}
+        tileFlagOptions = options;
+	}
    
+//======================================================================================================================
+//      Menu Actions
+
     public void DoChangeUnitType() {
         var agent = (workingTile==null ? null : workingTile.Place.Agent );
         if (agent!=null) {
@@ -201,6 +211,13 @@ public class EditToolsMenuScript : MonoBehaviour {
             agent.Status = (StatusEnum)unitStateDropdown.value;
             workingTile.RedrawTile();
        }
+	}
+  
+    public void DoChangeTileFlag() {
+        if (workingTile!=null) {
+            workingTile.Place.Flag = (FlagEnum)tileFlagDropdown.value;
+            workingTile.RedrawTile();
+        }
 	}
 
 //======================================================================================================================
@@ -298,10 +315,6 @@ print("DoUpdateTile=" + nextTile?.Place?.Where);
 
             // update cursor for new tile
             workingTile.TakeCursor( cursor );
-
-            // setting menu values
-            flagMenu.value = (int)place.Flag;
-            //agentMenu.value = place.Agent.Type.Index;
         }
 
          UpdateTileLabels();
@@ -320,15 +333,15 @@ print("UpdateTileLabels");
 
         if (workingTile==null) {
             tileTypeLabel.text = "Tile: - - -";
-            tileFlagLabel.text = "Flag: - - -";
 		}
         else {
 print("WorkingTile at "+workingTile.Place.Where);
             Place place = workingTile.Place;
             tileTypeLabel.text = "Tile: "+place.Height.ToString();
-            tileFlagLabel.text = "Flag: "+place.Flag.ToString();
+            tileFlagDropdown.value = (int)workingTile.Place.Flag;
         }
-
+ 
+        // agent dropdowns
         var agent = (workingTile==null ? null : workingTile.Place.Agent);
         if (agent==null) {
             unitTypeDropdown.gameObject.SetActive( false );
@@ -347,14 +360,7 @@ print("WorkingTile at "+workingTile.Place.Where);
             unitFaceDropdown.gameObject.SetActive( true );
             unitGroupDropdown.gameObject.SetActive( true );
             unitStateDropdown.gameObject.SetActive( true );
-
 		}
-	}
-
-//======================================================================================================================
-
-    public void DoChangeFlag() {
-        print("NEW FLAG="+flagMenu.value);
 	}
     
 //======================================================================================================================

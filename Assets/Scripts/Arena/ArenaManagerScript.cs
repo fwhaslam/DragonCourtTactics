@@ -19,19 +19,24 @@ namespace Arena {
     /// </summary>
     public class ArenaManagerScript : MonoBehaviour {
 
+        // inspector
         public Material pit,wall,hidden;
         public Color[] factionColor;
+        public Color flagShade;
+        public Vector3 flagScale;
 
+        // private values
         internal GameObject tileParent,levelParent,tokenParent;
         internal GameObject floor;
-        internal Sprite[] sprites;
+        internal Sprite[] sprites,normals;
         internal Material[] materials;
 
         //internal LevelMap currentMap;
     
         // map needs to redraw
         internal static UnityEvent<LevelMap> mapRedrawEvent = new UnityEvent<LevelMap>();
-        // new map has been loaded from file
+
+        // load new map ( or null for reset )
         internal static UnityEvent<LevelMap> mapLoadEvent = new UnityEvent<LevelMap>();
 
         static public ArenaManagerScript instance;
@@ -49,7 +54,7 @@ namespace Arena {
 
             BuildMaterials();
 
-            mapLoadEvent.Invoke( RealmFactory.SimpleTerrain( 12, 12 ) );      // load default map
+            mapLoadEvent.Invoke( null );      // load default map
 
             //BuildLevel( currentMap );
             //mapRedrawEvent.Invoke( currentMap );
@@ -71,7 +76,7 @@ namespace Arena {
            mapLoadEvent.RemoveListener( LoadMapFunction );
 	    }
 
-    //=======================================================================================================================
+//=======================================================================================================================
 
         /// <summary>
         /// Build Tile templates from sprites.
@@ -83,14 +88,19 @@ namespace Arena {
             tileParent = new GameObject("Tiles");
             UseParent( gameObject, tileParent );
 
-            sprites  = Resources.LoadAll<Sprite>("Unpaid/TileStone2");
+            //sprites  = Resources.LoadAll<Sprite>("Unpaid/TileStone2");
+            //sprites  = Resources.LoadAll<Sprite>("Usable/stone_tiles");
+            sprites  = Resources.LoadAll<Sprite>("Usable/pixel_tiles");
+            normals  = Resources.LoadAll<Sprite>("Usable/pixel_tiles_n");
+
             materials = new Material[ sprites.Length ];
             //tiles = new GameObject[sprites.Length];
 
             for (int ix=0;ix<sprites.Length;ix++) { 
 
                 Sprite sprite = sprites[ix];
-                materials[ix] = MaterialFromSprite( sprite );
+                Sprite normal = normals[ix];
+                materials[ix] = MaterialFromSpriteAndNormal( sprite, normal );
 
             }
 
@@ -101,10 +111,11 @@ namespace Arena {
         /// </summary>
         /// <param name="sprite"></param>
         /// <returns>Material</returns>
-        Material MaterialFromSprite( Sprite sprite ) {
+        Material MaterialFromSpriteAndNormal( Sprite sprite, Sprite normal ) {
 
             Material material = new Material(GetDefaultShader());
-            material.mainTexture = TextureFromSprite( sprite );
+            material.mainTexture = TextureFromSprite( sprite );                 // sets "_MainTex"
+            material.SetTexture( "_BumpMap", TextureFromSprite( normal ) );     // sets "_BumpMap"
 
 		    return material;
 	    }
@@ -140,27 +151,20 @@ namespace Arena {
             set { GlobalValues.currentMap = value; }
         }
 
-    //    internal LevelMap PrepareLevel() {
-
-
-    //        if (currentMap==null) {
-    //print("Creating New Map");
-    //            currentMap = RealmFactory.SimpleTerrain( 15, 15 );
-    //        }
-
-    //        return currentMap;
-	   // }
-
  //=======================================================================================================================
 
         /// <summary>
         /// Delegate for loading a new map.
         /// </summary>
         public void LoadMapFunction(LevelMap newMap ) {
+
+            // reset ?
+            if (newMap==null) newMap = RealmFactory.SimpleTerrain( 12, 12 );
+
             EditToolsMenuScript.tileSelectEvent.Invoke( null );
+
             currentMap = newMap;
             mapRedrawEvent.Invoke( newMap );
-            //RedrawMap( newMap );
 		}
 
         /// <summary>
@@ -168,7 +172,6 @@ namespace Arena {
         /// </summary>
         public void MapRedrawFunction(LevelMap level) {
 
-            print("BAD FRED!  Come back here and reuse these things!");
             if (levelParent!=null) { 
                 Destroy( levelParent );
                 Destroy( tokenParent );
@@ -257,7 +260,7 @@ namespace Arena {
         static readonly int DIR_OFFSET = 4;
 
         internal DirEnum FindCameraDirection() {
-        
+
             float angle = Camera.main.transform.eulerAngles.z;
     print("CAMERA="+angle);
 
