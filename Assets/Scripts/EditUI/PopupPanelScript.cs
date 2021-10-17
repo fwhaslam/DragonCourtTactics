@@ -22,28 +22,24 @@ namespace EditUI {
 		public GameObject pickerButton;
 		public GameObject animatorOwner;
 		public string animBoolKey;
-		public GameObject modalPanel;		// fill to make the popup modal
 
 		internal Camera viewCam;
 		internal RectTransform panelRect;
-		internal GameObject addIcon, cutIcon;
-		internal Animator showHideAnim;
+		internal Animator animator;
 
 		internal int mark = 0;
 
 
 		/// <summary>
-		/// Called just before object is instantiated.
-		/// Might be called DURING SizePickerButtonClicked
+		/// Called on first click.
 		/// </summary>
-		public void Start() {
+		internal void Prepare() {
+
+			if (viewCam!=null) return;
 
 			viewCam = GameObject.Find("UI Camera").GetComponent<Camera>();
 			panelRect = GetComponent<RectTransform>();
-			showHideAnim = animatorOwner.GetComponent<Animator>();
-
-			addIcon = GameObject.Find("AddRowIcon");
-			cutIcon = GameObject.Find("CutRowIcon");
+			animator = animatorOwner.GetComponent<Animator>();
 
 		}
 
@@ -73,6 +69,8 @@ namespace EditUI {
 		public void PickerButtonClicked() {
 print(">>>> Popup Picker Clicked name=" + gameObject.name + "   mark=" + (++mark));
 
+			Prepare();
+
 			if (!IsShowing()) {
 				Show();
 			}
@@ -85,16 +83,16 @@ print(">>>> Popup Picker Clicked name=" + gameObject.name + "   mark=" + (++mark
 //======================================================================================================================
 
 		internal bool IsShowing() {
-			return showHideAnim.GetBool(animBoolKey);
+			return animator.GetBool(animBoolKey);
 		}
 
 		public void Show() {
 
 			if (IsShowing()) return;
 
-			if (modalPanel!=null) modalPanel.SetActive(true);
+			//if (modalPanel!=null) modalPanel.SetActive(true);
 
-			showHideAnim.SetBool( animBoolKey, true );
+			animator.SetBool( animBoolKey, true );
 			UnityTools.SetSelected( gameObject );
 		}
 
@@ -102,9 +100,9 @@ print(">>>> Popup Picker Clicked name=" + gameObject.name + "   mark=" + (++mark
 
 			if (!IsShowing()) return;
 			
-			if (modalPanel!=null) modalPanel.SetActive(false);
+			//if (modalPanel!=null) modalPanel.SetActive(false);
 
-			showHideAnim.SetBool( animBoolKey, false );
+			animator.SetBool( animBoolKey, false );
 			//UnityTools.SetSelected( null );			// not right, I don't know how to 'unselect', but apparently the OnDeselect event occurs after
 		}
 	}
