@@ -5,7 +5,9 @@
 namespace Realm.Enums {
 
 	/// <summary>
-	/// Valid Values for Flag layer
+	/// Valid Values for Flag layer.
+	/// 
+	/// NOTE: be sure to update the FlagSymbolsScript in DCT.
 	/// </summary>
 	public enum FlagEnum {
 
