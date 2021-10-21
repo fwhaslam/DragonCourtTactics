@@ -16,7 +16,7 @@ namespace Tools {
         // Start is called before the first frame update
         void Start()
         {
-            this.gameObject.GetComponent<TMP_Text>().text = "Dragon Court Tactics\n"+Application.version;
+            this.gameObject.GetComponent<TMP_Text>().text = "Dragon Court Tactics "+Application.version;
         }
 
     }

@@ -4,8 +4,10 @@
 
 using Arena;
 
-using Realm;
-using Realm.Enums;
+    using Realm;
+    using Realm.Enums;
+    using Realm.Puzzle;
+
 using System;
 using System.Collections.Generic;
 
@@ -38,7 +40,7 @@ public class EditToolsMenuScript : MonoBehaviour {
 	// Awake is called before OnEnable ( which is before Start )
 	public void Awake() {
 
-        mapTitleLabel = GameObject.Find("MapTitleLabel").GetComponent<TMP_Text>();
+        mapTitleLabel = GameObject.Find("EditTitleTXT").GetComponent<TMP_Text>();
         
         mapSizeLabel = GameObject.Find("MapSizeLabel").GetComponent<TMP_Text>();
         tileTypeLabel = GameObject.Find("TileTypeLabel").GetComponent<TMP_Text>();
@@ -124,10 +126,10 @@ public class EditToolsMenuScript : MonoBehaviour {
     /// <summary>
     /// Delegate for map redraw events.
     /// </summary>
-    public void MapRedrawFunction(LevelMap level) {
+    public void MapRedrawFunction(PuzzleMap level) {
         print("  ### ### ### ### EditToolsMenu => Map Redraw Function ");
 
-        mapTitleLabel.text = "Editing ("+level.Title+")";
+        mapTitleLabel.text = "["+level.Title+"]";
         mapSizeLabel.text = "Size: "+level.Wide+" x "+level.Tall;
 
 	}
@@ -311,22 +313,12 @@ print("DoUpdateTile=" + nextTile?.Place?.Where);
         workingTile = nextTile;
         if (workingTile!=null) {
 
-            Place place = workingTile.Place;
-
             // update cursor for new tile
             workingTile.TakeCursor( cursor );
         }
 
          UpdateTileLabels();
 	}
-
-    /// <summary>
-    /// When a tile is dragged, call this method.
-    /// </summary>
-    /// <param name="delta"></param>
- //   static public void DragTile( Vector3 delta ) {
-
-	//}
     
     internal void UpdateTileLabels() {
 print("UpdateTileLabels");

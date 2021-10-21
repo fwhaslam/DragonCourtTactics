@@ -36,7 +36,7 @@ public class MainCameraHandler : MonoBehaviour {
     /// Setup camera values.  Add listener to slider.
     /// </summary>
     void Start() {
-
+print("START MainCameraHandler");
         currentTurning = 0;
         angle = startAngle;
         zoom = startZoom;
@@ -70,6 +70,7 @@ public class MainCameraHandler : MonoBehaviour {
     /// Add self as Event Listener
     /// </summary>
 	public void OnEnable() {
+print("OnEnable MainCameraHandler");
         TileScript.tileDragEvent.AddListener( TileDragFunction );
 	}
 
@@ -77,6 +78,7 @@ public class MainCameraHandler : MonoBehaviour {
     /// Remove self as Event Listener
     /// </summary>
 	public void OnDisable() {
+print("OnDisable MainCameraHandler");
         TileScript.tileDragEvent.RemoveListener( TileDragFunction );
 	}
 
@@ -191,12 +193,12 @@ public class MainCameraHandler : MonoBehaviour {
 
         // do not move past edge of map
         focus.x += ( forward.x + sideway.x ) * zoom / 100f / startZoom;
-        float xlimit = GlobalValues.currentMap.Wide / 2f;
+        float xlimit = GlobalValues.GetCurrentMap().Wide / 2f;
         if (focus.x<-xlimit) focus.x = -xlimit;
         else if (focus.x>xlimit) focus.x = xlimit;
 
         focus.y += ( forward.y + sideway.y ) * zoom / 100f / startZoom;
-        float ylimit = GlobalValues.currentMap.Tall / 2f;
+        float ylimit = GlobalValues.GetCurrentMap().Tall / 2f;
         if (focus.y<-ylimit) focus.y = -ylimit;
         if (focus.y>ylimit) focus.y = ylimit;
 	}

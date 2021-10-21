@@ -1,4 +1,10 @@
+//
+//	Copyright 2021 Frederick William Haslam born 1962
+//
+
+using Realm;
 using Realm.Enums;
+using Realm.Puzzle;
 
 using System;
 using System.Collections;
