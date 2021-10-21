@@ -5,16 +5,18 @@
 namespace Realm {
 
 	using System;
+
 	using Realm.Enums;
+	using Realm.Puzzle;
 	using Realm.Tools;
 
 	public class RealmFactory {
 
 		static readonly Random random = new Random();
 
-		static public LevelMap SimpleTerrain(int w,int t) {
+		static public PuzzleMap SimpleTerrain(int w,int t) {
 
-			LevelMap map = LevelMap.Allocate( w, t );
+			PuzzleMap map = PuzzleMap.Allocate( w, t );
 
 			map.Places[w/2,t/2].Height = HeightEnum.Pit;
 			map.Places[1+w/2,t/2].Height = HeightEnum.Pit;
@@ -26,18 +28,18 @@ namespace Realm {
 			return map;
 		}
 
-		static public LevelMap RandomTerrain() {
+		static public PuzzleMap RandomTerrain() {
 			return GenerateTerrain(random.Next());
 		}
 
-		static public LevelMap GenerateTerrain(int seed) {
+		static public PuzzleMap GenerateTerrain(int seed) {
 
 			Random rnd = new Random(seed);
 
 			int wide = 5 + rnd.Next(11);
 			int tall = 5 + rnd.Next(11);
 
-			LevelMap map = LevelMap.Allocate(wide, tall);
+			PuzzleMap map = PuzzleMap.Allocate(wide, tall);
 
 			for (int w = 0; w < map.Wide; w++) for (int t = 0; t < map.Tall; t++) {
 				map.Places[w, t].Height = (HeightEnum)rnd.Next(6);
@@ -85,9 +87,9 @@ namespace Realm {
 		/// </summary>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		static public LevelMap SingleLineTerrain(int length) {
+		static public PuzzleMap SingleLineTerrain(int length) {
 
-			return LevelMap.Allocate( 1, length );
+			return PuzzleMap.Allocate( 1, length );
 		}
 	}
 

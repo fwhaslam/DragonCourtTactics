@@ -2,7 +2,7 @@
 //	Copyright 2021 Frederick William Haslam born 1962
 //
 
-namespace Realm {
+namespace Realm.Puzzle {
 
 	using Realm.Enums;
 	using Realm.Tools;
@@ -14,8 +14,8 @@ namespace Realm {
 	/// </summary>
 	public class Place {
 
-		public Place( int x, int y) {
-			Where = new Where(x,y);
+		public Place(int x, int y) {
+			Where = new Where(x, y);
 		}
 
 		public Where Where { get; set; }
