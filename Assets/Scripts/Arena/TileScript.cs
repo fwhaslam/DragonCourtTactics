@@ -6,6 +6,8 @@ namespace Arena {
 
     using Realm;
     using Realm.Enums;
+    using Realm.Puzzle;
+
     using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.EventSystems;
@@ -56,7 +58,7 @@ namespace Arena {
 		}
         
         public void RedrawTile() {
-print("REDRAW="+name);
+//print("REDRAW="+name);
 
             // change 'cube' size
             var top = CalcZ( Place.Height );
@@ -155,8 +157,8 @@ print("FIXING FLAG = "+flagKey);
         /// <param name="height"></param>
         /// <returns></returns>
         internal Material PickMaterial( HeightEnum height ) {
-            if (height==HeightEnum.Pit) return ArenaManagerScript.instance.hidden;
-            if (height==HeightEnum.Wall) return ArenaManagerScript.instance.wall;
+            if (height==HeightEnum.Pit) return Owner.hidden;
+            if (height==HeightEnum.Wall) return Owner.wall;
             return Floor;
 	    }
 
@@ -172,7 +174,7 @@ print("FIXING FLAG = "+flagKey);
 	    //}
 
         public void AddAgent( AgentType type, DirEnum face ) {
-            currentMap.AddAgent( type, Place.Where, face );
+            GetCurrentMap().AddAgent( type, Place.Where, face );
             RedrawTile();
 	    }
     

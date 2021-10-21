@@ -6,13 +6,16 @@ namespace Arena {
 
     using Realm;
     using Realm.Enums;
+    using Realm.Puzzle;
 
     using Shared;
     using System;
     using UnityEngine;
     using UnityEngine.Events;
+	using UnityEngine.SceneManagement;
 
-    using static Shared.UnityTools;
+    using static Tools.MaterialTool;
+	using static Shared.UnityTools;
 
     /// <summary>
     /// Construct tiles, layout map.
@@ -26,44 +29,43 @@ namespace Arena {
         public Vector3 flagScale;
 
         // private values
-        internal GameObject tileParent,levelParent,tokenParent;
+        internal GameObject levelParent,tokenParent;
         internal GameObject floor;
-        internal Sprite[] sprites,normals;
-        internal Material[] materials;
 
-        //internal LevelMap currentMap;
+        // shared private values
+        internal static Sprite[] sprites,normals;
+        internal static Material[] materials = null;
+
+        //internal PuzzleMap currentMap;
     
         // map needs to redraw
-        internal static UnityEvent<LevelMap> mapRedrawEvent = new UnityEvent<LevelMap>();
+        internal static UnityEvent<PuzzleMap> mapRedrawEvent = new UnityEvent<PuzzleMap>();
 
         // load new map ( or null for reset )
-        internal static UnityEvent<LevelMap> mapLoadEvent = new UnityEvent<LevelMap>();
+        internal static UnityEvent<PuzzleMap> mapLoadEvent = new UnityEvent<PuzzleMap>();
 
-        static public ArenaManagerScript instance;
+		internal void Awake() {
+print("Awake for "+GetType().Name+" under ["+SceneManager.GetActiveScene().name+"]");
+		}
 
-        /// <summary>
-        /// Start is called before the first frame update
-        /// </summary>
-        void Start() {
+		/// <summary>
+		/// Start is called before the first frame update
+		/// </summary>
+		internal void Prepare( PuzzleMap nextMap ) {
+print("START for "+GetType().Name+" under ["+SceneManager.GetActiveScene().name+"]");
 
-		    if (instance != null) throw new ApplicationException("Cannot instantiate ArenaHandlerScript twice.");
-		    instance = this;
+			BuildMaterials();
 
-		    //mapRedrawEvent.AddListener( MapRedrawFunction );
-            //currentMap = PrepareLevel();
+            mapLoadEvent.Invoke( nextMap );      // load default map
 
-            BuildMaterials();
-
-            mapLoadEvent.Invoke( null );      // load default map
-
-            //BuildLevel( currentMap );
-            //mapRedrawEvent.Invoke( currentMap );
 	    }
 
         /// <summary>
         /// Add self as Event Listener
         /// </summary>
 	    public void OnEnable() {
+ print("OnEnable for "+GetType().Name+" under ["+SceneManager.GetActiveScene().name+"]");
+
             mapRedrawEvent.AddListener( MapRedrawFunction );
             mapLoadEvent.AddListener( LoadMapFunction );
 	    }
@@ -72,8 +74,9 @@ namespace Arena {
         /// Remove self as Event Listener
         /// </summary>
 	    public void OnDisable() {
+ print("OnDisable for "+GetType().Name+" under ["+SceneManager.GetActiveScene().name+"]");
             mapRedrawEvent.RemoveListener( MapRedrawFunction );
-           mapLoadEvent.RemoveListener( LoadMapFunction );
+            mapLoadEvent.RemoveListener( LoadMapFunction );
 	    }
 
 //=======================================================================================================================
@@ -83,15 +86,14 @@ namespace Arena {
         /// </summary>
         internal void BuildMaterials() {
 
-            print("BuildMaterials");
-                
-            tileParent = new GameObject("Tiles");
-            UseParent( gameObject, tileParent );
+print(">> BuildMaterials for "+GetType().Name+" under ["+SceneManager.GetActiveScene().name+"]");
+
+            if (materials!=null) return;
 
             //sprites  = Resources.LoadAll<Sprite>("Unpaid/TileStone2");
             //sprites  = Resources.LoadAll<Sprite>("Usable/stone_tiles");
             sprites  = Resources.LoadAll<Sprite>("Usable/pixel_tiles");
-            normals  = Resources.LoadAll<Sprite>("Usable/pixel_tiles_n");
+            //normals  = Resources.LoadAll<Sprite>("Usable/pixel_tiles_n");
 
             materials = new Material[ sprites.Length ];
             //tiles = new GameObject[sprites.Length];
@@ -99,56 +101,57 @@ namespace Arena {
             for (int ix=0;ix<sprites.Length;ix++) { 
 
                 Sprite sprite = sprites[ix];
-                Sprite normal = normals[ix];
-                materials[ix] = MaterialFromSpriteAndNormal( sprite, normal );
+                //Sprite normal = normals[ix];
+                //materials[ix] = MaterialFromSpriteAndNormal( sprite, normal );
+                materials[ix] = MaterialFromSprite( sprite );
 
             }
 
 	    }
     
-        /// <summary>
-        ///     Material built from sprite texture.
-        /// </summary>
-        /// <param name="sprite"></param>
-        /// <returns>Material</returns>
-        Material MaterialFromSpriteAndNormal( Sprite sprite, Sprite normal ) {
+     //   /// <summary>
+     //   ///     Material built from sprite texture.
+     //   /// </summary>
+     //   /// <param name="sprite"></param>
+     //   /// <returns>Material</returns>
+     //   Material MaterialFromSpriteAndNormal( Sprite sprite, Sprite normal ) {
 
-            Material material = new Material(GetDefaultShader());
-            material.mainTexture = TextureFromSprite( sprite );                 // sets "_MainTex"
-            material.SetTexture( "_BumpMap", TextureFromSprite( normal ) );     // sets "_BumpMap"
+     //       Material material = new Material(GetDefaultShader());
+     //       material.mainTexture = TextureFromSprite( sprite );                 // sets "_MainTex"
+     //       material.SetTexture( "_BumpMap", TextureFromSprite( normal ) );     // sets "_BumpMap"
 
-		    return material;
-	    }
+		   // return material;
+	    //}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sprite"></param>
-        /// <returns></returns>
-        Texture2D TextureFromSprite(Sprite sprite) {
+     //   /// <summary>
+     //   /// 
+     //   /// </summary>
+     //   /// <param name="sprite"></param>
+     //   /// <returns></returns>
+     //   Texture2D TextureFromSprite(Sprite sprite) {
 
-            if (sprite.rect.width == sprite.texture.width) return sprite.texture;
+     //       if (sprite.rect.width == sprite.texture.width) return sprite.texture;
 
-            // else
-            Texture2D newText = new Texture2D((int)sprite.rect.width,(int)sprite.rect.height);
-            Color[] newColors = sprite.texture.GetPixels(
-                (int)sprite.textureRect.x, (int)sprite.textureRect.y,
-                (int)sprite.textureRect.width, (int)sprite.textureRect.height );
+     //       // else
+     //       Texture2D newText = new Texture2D((int)sprite.rect.width,(int)sprite.rect.height);
+     //       Color[] newColors = sprite.texture.GetPixels(
+     //           (int)sprite.textureRect.x, (int)sprite.textureRect.y,
+     //           (int)sprite.textureRect.width, (int)sprite.textureRect.height );
 
-            newText.SetPixels(newColors);
-            newText.Apply();
+     //       newText.SetPixels(newColors);
+     //       newText.Apply();
 
-            return newText;
-        }
+     //       return newText;
+     //   }
     
  //=======================================================================================================================
 
         /// <summary>
         /// Proxy to Global values.
         /// </summary>
-        public LevelMap currentMap {
-            get => GlobalValues.currentMap;
-            set { GlobalValues.currentMap = value; }
+        public PuzzleMap currentMap {
+            get => GlobalValues.GetCurrentMap();
+            set => GlobalValues.SetCurrentMap( value );
         }
 
  //=======================================================================================================================
@@ -156,8 +159,9 @@ namespace Arena {
         /// <summary>
         /// Delegate for loading a new map.
         /// </summary>
-        public void LoadMapFunction(LevelMap newMap ) {
+        public void LoadMapFunction(PuzzleMap newMap ) {
 
+print("LOAD MAP FUNCTION");
             // reset ?
             if (newMap==null) newMap = RealmFactory.SimpleTerrain( 12, 12 );
 
@@ -170,12 +174,11 @@ namespace Arena {
         /// <summary>
         /// Delegate for global map redraw events.
         /// </summary>
-        public void MapRedrawFunction(LevelMap level) {
+        public void MapRedrawFunction(PuzzleMap level) {
 
             if (levelParent!=null) { 
                 Destroy( levelParent );
                 Destroy( tokenParent );
-                Destroy( tileParent );
                 Destroy( floor );
             }
 
@@ -188,7 +191,7 @@ namespace Arena {
         /// <summary>
         /// Use Map from Realm to build a local model using Tile Templates ( eg. cubes )
         /// </summary>
-        internal void BuildLevel( LevelMap level ) {
+        internal void BuildLevel( PuzzleMap level ) {
 
     print("DRAW LEVEL="+level);
                 
@@ -202,7 +205,8 @@ namespace Arena {
             RedrawMap( level );
         }
 
-        internal void RedrawMap( LevelMap level ) {
+        internal void RedrawMap( PuzzleMap level ) {
+print("RedrawMap for "+GetType().Name+" under ["+SceneManager.GetActiveScene().name+"]");
 
             // center
             Vector2 c = new Vector2( level.Wide/2f, level.Tall/2f );
