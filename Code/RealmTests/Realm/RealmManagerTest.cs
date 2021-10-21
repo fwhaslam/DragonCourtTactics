@@ -11,6 +11,9 @@ using YamlDotNet.Serialization;
 namespace Realm {
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+	using Realm.Puzzle;
+
 	using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 	using static Utility.AssertStringLinesUtility;
 
@@ -42,7 +45,7 @@ namespace Realm {
 		[TestMethod]
 		public void DumpLevelMap( ) {
 
-			LevelMap map = RealmFactory.SimpleTerrain(8,8);
+			PuzzleMap map = RealmFactory.SimpleTerrain(8,8);
 
 			// invocation
 			string result = RealmManager.DumpLevelMap( map );
@@ -57,7 +60,7 @@ namespace Realm {
 		public void ParseLevelMap( ) {
 
 			// invocation
-			LevelMap result = RealmManager.ParseLevelMap( CHECK_LEVEL );
+			PuzzleMap result = RealmManager.ParseLevelMap( CHECK_LEVEL );
 
 Console.Out.WriteLine( "MAP>>"+RealmManager.DumpLevelMap( result ) );
 

@@ -7,6 +7,7 @@ namespace Realm {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	using Realm.Enums;
+	using Realm.Puzzle;
 	using Realm.Tools;
 
 	using System;
@@ -20,12 +21,12 @@ namespace Realm {
 	[TestClass]
 	public class LevelMapTest {
 
-		public void DisplayMap(LevelMap map) {
+		public void DisplayMap(PuzzleMap map) {
 			Console.Out.WriteLine(RealmManager.DumpLevelMap(map));
 		}
 
-		public LevelMap CheckMap() {
-			var map = LevelMap.Allocate( 5, 5 );
+		public PuzzleMap CheckMap() {
+			var map = PuzzleMap.Allocate( 5, 5 );
 
 			map.Places[2,2].Height = HeightEnum.Pit;	// hole in the middle
 			map.AddAgent(  AgentType.PEASANT, new Where(2,3), DirEnum.North );
@@ -38,7 +39,7 @@ namespace Realm {
 		public void Allocate() {
 			
 			// invocation
-			var result = LevelMap.Allocate(10,12);
+			var result = PuzzleMap.Allocate(10,12);
 
 			// assertions
 			AreEqual( "Empty Map", result.Title );

@@ -7,6 +7,7 @@ namespace Realm {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	using Realm.Enums;
+	using Realm.Puzzle;
 	using Realm.Tools;
 
 	using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;

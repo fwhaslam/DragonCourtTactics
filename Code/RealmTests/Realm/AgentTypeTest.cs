@@ -9,6 +9,7 @@ namespace Realm {
 	using System.Linq;
 	using System.Collections.Generic;
 	using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+	using Realm.Puzzle;
 
 	[TestClass]
 	public class AgentTypeTest {
