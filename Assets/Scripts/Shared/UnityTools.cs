@@ -98,14 +98,14 @@ print("SCREEN PT TO LOCAL BOOL = "+result);
 		static public void ComplainAndDie( Exception ex ) {
 			print( ">>>>>>>>>>>>>>>>>>> Fatal Exception !!!\n"+ex );
 			#if DEVELOPMENT_BUILD // this is a UNITY define
-			ExitGame();
+			CloseGame();
 			#endif
 		}
 
 
-		static public void ExitGame() {
+		static public void CloseGame() {
 
-			print("Trying to Exit");
+			print("Trying to Close Game");
 
 			#if UNITY_EDITOR
 			UnityEditor.EditorApplication.isPlaying = false;
