@@ -13,9 +13,9 @@ using Shared;
 
 using TMPro;
 using System;
-    using Realm;
-    using Realm.Enums;
-    using Realm.Puzzle;
+using Realm;
+using Realm.Enums;
+using Realm.Puzzle;
 
 
 //using Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject;

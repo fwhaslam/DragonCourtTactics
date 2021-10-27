@@ -1,10 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
+//
+//	Copyright 2021 Frederick William Haslam born 1962 in the USA
+//
 
 namespace Shared {
+
+    using System.Collections;
+    using System.Collections.Generic;
+    using NUnit.Framework;
+    using UnityEngine;
+    using UnityEngine.TestTools;
 
 	public class MathToolsTest {
 

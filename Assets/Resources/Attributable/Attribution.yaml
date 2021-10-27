@@ -1,0 +1,34 @@
+#
+# Attribution in this file is used to construct the Game Credits.
+# VerifyAttributionTest in EditModeTests verify that all contents of Resource/Attribute have attribution.
+#
+Attribution:
+  -
+    Path: Music/Adventure_AlexanderNakarada.mp3
+    Title: Adventure
+    License: https://creativecommons.org/licenses/by/4.0/
+    Source: https://www.chosic.com/free-music/all/
+    Creator: Alexander Nakarada
+    Link: https://www.serpentsoundstudios.com
+  -
+    Path: Music/DragonSlayer_MakaiSymphony.mp3
+    Title: Dragon Slayer
+    Source: https://www.chosic.com/free-music/all/
+    License: https://creativecommons.org/licenses/by-sa/3.0/
+    Creator: 魔界Symphony
+    Link: https://soundcloud.com/makai-symphony
+  -
+    Path: Music/InDreams_ScottBuckley.mp3
+    Title: In Dreams
+    Source: https://www.chosic.com/free-music/all/
+    License: https://creativecommons.org/licenses/by/4.0/
+    Creator: Scott Buckley
+    Link: http://www.scottbuckley.com.au
+  -
+    Path: Music/ForestWalk_AlexanderNakarada.mp3
+    Title: Forest Walk
+    Source: https://www.chosic.com/free-music/all/
+    License: https://creativecommons.org/licenses/by/4.0/
+    Creator: Alexander Nakarada
+    Link: https://www.serpentsoundstudios.com
+...

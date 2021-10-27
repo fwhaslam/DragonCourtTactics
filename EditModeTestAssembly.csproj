@@ -58,6 +58,8 @@
   <ItemGroup>
     <Compile Include="Assets\ScriptsTest\EditModeTests\NewTestScript.cs" />
     <Compile Include="Assets\ScriptsTest\EditModeTests\Shared\MathToolsTest.cs" />
+    <Compile Include="Assets\ScriptsTest\EditModeTests\Attributable\VerifyAttributionTest.cs" />
+    <Compile Include="Assets\ScriptsTest\EditModeTests\Shared\AttributionListTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\ScriptsTest\EditModeTests\EditModeTestAssembly.asmdef" />

@@ -301,6 +301,9 @@
     <Reference Include="RealmModel">
       <HintPath>Assets\_DLLs\RealmModel.dll</HintPath>
     </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>Assets\_DLLs\YamlDotNet.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>C:\Users\Fred\Desktop\Workspace\Unity\_Editors\2021.1.19f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
     </Reference>
