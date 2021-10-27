@@ -59,14 +59,17 @@
     <Compile Include="Assets\Scripts\Examples\MouseExamples.cs" />
     <Compile Include="Assets\Scripts\EditUI\PopupPanelScript.cs" />
     <Compile Include="Assets\Scripts\PlayToolsMenuScript.cs" />
+    <Compile Include="Assets\Scripts\Arena\DragViewScript.cs" />
     <Compile Include="Assets\Scripts\Examples\CameraImageScript.cs" />
     <Compile Include="Assets\Scripts\SpinObject.cs" />
     <Compile Include="Assets\Scripts\Tools\ScreenScaleLayout.cs" />
     <Compile Include="Assets\Scripts\EditToolsMenuScript.cs" />
+    <Compile Include="Assets\Scripts\MainUI\ShowCreditsScript.cs" />
     <Compile Include="Assets\Scripts\MainCameraHandler.cs" />
     <Compile Include="Assets\Scripts\Arena\TileScript.cs" />
     <Compile Include="Assets\Scripts\Tools\MaterialTool.cs" />
     <Compile Include="Assets\Scripts\Controller\CampaignSceneController.cs" />
+    <Compile Include="Assets\Scripts\Shared\AttributionList.cs" />
     <Compile Include="Assets\Scripts\EditUI\EditTitleScript.cs" />
     <Compile Include="Assets\Scripts\Shared\GlobalValues.cs" />
     <Compile Include="Assets\Scripts\Tools\BillboardSprite.cs" />
@@ -77,6 +80,8 @@
     <Compile Include="Assets\Scripts\AssemblyInfo.cs" />
     <Compile Include="Assets\Scripts\FlagSymbolsScript.cs" />
     <Compile Include="Assets\Scripts\EditUI\DialogBoxScript.cs" />
+    <Compile Include="Assets\Scripts\Shared\Attribution.cs" />
+    <Compile Include="Assets\Scripts\Controller\MusicController.cs" />
     <Compile Include="Assets\Scripts\Controller\PlaySceneController.cs" />
     <Compile Include="Assets\Scripts\Arena\ArenaEditManagerScript.cs" />
     <Compile Include="Assets\Scripts\Shared\UnityTools.cs" />
@@ -345,6 +350,9 @@
     </Reference>
     <Reference Include="RealmModel">
       <HintPath>Assets\_DLLs\RealmModel.dll</HintPath>
+    </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>Assets\_DLLs\YamlDotNet.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>C:\Users\Fred\Desktop\Workspace\Unity\_Editors\2021.1.19f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
