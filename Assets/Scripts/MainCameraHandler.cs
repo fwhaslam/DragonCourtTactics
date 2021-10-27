@@ -71,7 +71,7 @@ print("START MainCameraHandler");
     /// </summary>
 	public void OnEnable() {
 print("OnEnable MainCameraHandler");
-        TileScript.tileDragEvent.AddListener( TileDragFunction );
+        DragViewScript.tileDragEvent.AddListener( TileDragFunction );
 	}
 
     /// <summary>
@@ -79,7 +79,7 @@ print("OnEnable MainCameraHandler");
     /// </summary>
 	public void OnDisable() {
 print("OnDisable MainCameraHandler");
-        TileScript.tileDragEvent.RemoveListener( TileDragFunction );
+        DragViewScript.tileDragEvent.RemoveListener( TileDragFunction );
 	}
 
 	/// <summary>

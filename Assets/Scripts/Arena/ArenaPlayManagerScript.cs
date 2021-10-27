@@ -17,6 +17,8 @@ namespace Arena {
 	using static Shared.GlobalValues;
 
 	public class ArenaPlayManagerScript: ArenaManagerScript {
+
+		int currentTurn,currentFaction;
 		
 	    new public void OnEnable() {
  print("OnEnable for "+GetType().Name+" under ["+SceneManager.GetActiveScene().name+"]");
@@ -41,7 +43,14 @@ namespace Arena {
 			if (map.Wide==0) map = RealmFactory.SimpleTerrain( 8, 8 );		// create new map
 
 			base.Prepare( map );
+			currentTurn = currentFaction = 0;
 	    }
+
+//======================================================================================================================
+//		Current Turn Zero the player can add units into the 'home' locations
+//======================================================================================================================
+
+
 	}
 
 }

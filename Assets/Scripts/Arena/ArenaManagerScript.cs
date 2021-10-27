@@ -30,11 +30,16 @@ namespace Arena {
 
         // private values
         internal GameObject levelParent,tokenParent;
-        internal GameObject floor;
+        internal GameObject floor,dragZone;
+
+        internal readonly string tileSpritePath = "Art/Tiles/StonishTiles";
+        internal readonly string tileNormalPath = null;
 
         // shared private values
         internal static Sprite[] sprites,normals;
         internal static Material[] materials = null;
+
+
 
         //internal PuzzleMap currentMap;
     
@@ -92,57 +97,22 @@ print(">> BuildMaterials for "+GetType().Name+" under ["+SceneManager.GetActiveS
 
             //sprites  = Resources.LoadAll<Sprite>("Unpaid/TileStone2");
             //sprites  = Resources.LoadAll<Sprite>("Usable/stone_tiles");
-            sprites  = Resources.LoadAll<Sprite>("Usable/pixel_tiles");
-            //normals  = Resources.LoadAll<Sprite>("Usable/pixel_tiles_n");
+
+            sprites  = Resources.LoadAll<Sprite>( tileSpritePath );
+            normals  = null;
+            if (tileNormalPath!=null) normals = Resources.LoadAll<Sprite>( tileNormalPath );
 
             materials = new Material[ sprites.Length ];
-            //tiles = new GameObject[sprites.Length];
 
             for (int ix=0;ix<sprites.Length;ix++) { 
-
-                Sprite sprite = sprites[ix];
-                //Sprite normal = normals[ix];
-                //materials[ix] = MaterialFromSpriteAndNormal( sprite, normal );
-                materials[ix] = MaterialFromSprite( sprite );
-
+                if (tileNormalPath==null) {
+                    materials[ix] = MaterialFromSprite( sprites[ix] );
+				}
+                else {
+                   materials[ix] = MaterialFromSpriteAndNormal( sprites[ix], normals[ix] );
+				}
             }
-
 	    }
-    
-     //   /// <summary>
-     //   ///     Material built from sprite texture.
-     //   /// </summary>
-     //   /// <param name="sprite"></param>
-     //   /// <returns>Material</returns>
-     //   Material MaterialFromSpriteAndNormal( Sprite sprite, Sprite normal ) {
-
-     //       Material material = new Material(GetDefaultShader());
-     //       material.mainTexture = TextureFromSprite( sprite );                 // sets "_MainTex"
-     //       material.SetTexture( "_BumpMap", TextureFromSprite( normal ) );     // sets "_BumpMap"
-
-		   // return material;
-	    //}
-
-     //   /// <summary>
-     //   /// 
-     //   /// </summary>
-     //   /// <param name="sprite"></param>
-     //   /// <returns></returns>
-     //   Texture2D TextureFromSprite(Sprite sprite) {
-
-     //       if (sprite.rect.width == sprite.texture.width) return sprite.texture;
-
-     //       // else
-     //       Texture2D newText = new Texture2D((int)sprite.rect.width,(int)sprite.rect.height);
-     //       Color[] newColors = sprite.texture.GetPixels(
-     //           (int)sprite.textureRect.x, (int)sprite.textureRect.y,
-     //           (int)sprite.textureRect.width, (int)sprite.textureRect.height );
-
-     //       newText.SetPixels(newColors);
-     //       newText.Apply();
-
-     //       return newText;
-     //   }
     
  //=======================================================================================================================
 
@@ -180,6 +150,7 @@ print("LOAD MAP FUNCTION");
                 Destroy( levelParent );
                 Destroy( tokenParent );
                 Destroy( floor );
+                Destroy( dragZone );
             }
 
             // and away we go!
@@ -196,6 +167,7 @@ print("LOAD MAP FUNCTION");
     print("DRAW LEVEL="+level);
                 
             BuildFloor( level.Wide, level.Tall );
+            BuildDragZone();
 
             levelParent = new GameObject("Level");
             UseParent( gameObject, levelParent );
@@ -232,6 +204,9 @@ print("RedrawMap for "+GetType().Name+" under ["+SceneManager.GetActiveScene().n
 				    TileScript info = tile.AddComponent<TileScript>();
 				    info.SetRef( this, place, c.x-ix, c.y-iy, material );
 
+                    // let drags on the tile update the camaera
+                    tile.AddComponent<DragViewScript>();
+
                     // cleanup
                     info.RedrawTile();
 
@@ -251,13 +226,30 @@ print("RedrawMap for "+GetType().Name+" under ["+SceneManager.GetActiveScene().n
 
             floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             floor.name = "Floor";
-		    UseParent( gameObject, floor );
+            floor.AddComponent<DragViewScript>();
 
             floor.transform.localScale = new Vector3( w-SLIGHTLY_SMALLER, t-SLIGHTLY_SMALLER, 0.1f );
             floor.transform.localPosition = new Vector3( 0, 0, 0.05f );
             floor.GetComponent<MeshRenderer>().material = pit;
 
+		    UseParent( gameObject, floor );
 	    }
+
+        /// <summary>
+        /// Drag Zone is an invisible rectangle that catches clicks outside the map.
+        /// </summary>
+        internal void BuildDragZone() {
+
+            dragZone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            dragZone.name = "Drag Zone";
+            dragZone.AddComponent<DragViewScript>();
+
+            dragZone.transform.localScale = new Vector3( 100000f, 100000f, 0.1f );
+            dragZone.transform.localPosition = new Vector3( 0, 0, -10f );
+            dragZone.GetComponent<MeshRenderer>().enabled = false;
+
+		    UseParent( gameObject, dragZone );
+		}
 
     //=======================================================================================================================
 
