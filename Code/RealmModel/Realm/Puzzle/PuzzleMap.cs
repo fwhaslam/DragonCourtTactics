@@ -2,7 +2,6 @@
 //	Copyright 2021 Frederick William Haslam born 1962
 //
 
-
 namespace Realm.Puzzle {
 
 	using System;
@@ -15,6 +14,7 @@ namespace Realm.Puzzle {
 	using System.Text;
 	using YamlDotNet.Serialization;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Collections;
 
 	/// <summary>
 	/// Representation of the play region.  Always a rectangle.
@@ -28,7 +28,7 @@ namespace Realm.Puzzle {
 
 		/// <summary>
 		/// Provided to support YAML.
-		/// </summary>
+		/// </summary
 		public PuzzleMap() { }
 
 		static public PuzzleMap Allocate(int w, int t) {
@@ -49,11 +49,19 @@ namespace Realm.Puzzle {
 			return work;
 		}
 
-		static public Place CreatePlace(int col, int row, Place src) {
+		static internal Place CreatePlace(int col, int row, Place src) {
 			return new Place(col, row);
 		}
 
-		//======================================================================================================================
+		/// <summary>
+		/// Iterator through places as a linear collection.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<Place> GetPlaceLoop() {
+			return new PlaceLoop(this);
+		}
+
+//======================================================================================================================
 
 		public string Title { get; set; }
 
