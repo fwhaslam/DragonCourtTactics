@@ -14,19 +14,15 @@ namespace Arena {
 
     using static Shared.GlobalValues;
     using static Shared.UnityTools;
-    using static Tools.MaterialTool;
 
     /// <summary>
     /// Mange appearance and actions on a single Tile.
     /// </summary>
-    public class TileScript : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
+    public class TileScript : MonoBehaviour, IPointerDownHandler {
 
         internal GameObject token = null;
         internal GameObject flag = null;
-        
-        // when a tile is dragged, move the camera :: function( V3 start, V3 delta )
-        static internal readonly UnityEvent<Vector3,Vector3> tileDragEvent = new UnityEvent<Vector3,Vector3>();
-
+ 
         // Start is called before the first frame update
         void Start() {
         }
@@ -48,7 +44,7 @@ namespace Arena {
             //var top = transform.lossyScale.z; 
             var top = CalcZ( Place.Height );
 
-            cursor.transform.position = new Vector3( where.x, where.y, top );
+            cursor.transform.position = new Vector3( where.x, where.y, top + 0.2f );
 
 	    }
 
@@ -132,7 +128,7 @@ print("FIXING FLAG = "+flagKey);
 				UseParent( gameObject, flag );
             }
 
-            flag.transform.localPosition  = new Vector3( 0, 0, 1.2f + top );  // relative to cube
+            flag.transform.localPosition  = new Vector3( 0, 0, 0.6f + top );  // relative to cube
             flag.transform.localScale = Owner.flagScale;    //new Vector3(0.3f,0.3f,0.3f);
 
             var asSprite = flag.GetComponent<SpriteRenderer>();
@@ -146,9 +142,9 @@ print("FIXING FLAG = "+flagKey);
         /// <param name="height"></param>
         /// <returns></returns>
         internal float CalcZ( HeightEnum height ) {
-            if (height==HeightEnum.Pit) return 0.2f;
-            if (height==HeightEnum.Wall) return 3f;
-            return 0.2f + (int)height * 0.4f;
+            if (height==HeightEnum.Pit) return 0.1f;
+            //if (height==HeightEnum.Wall) return 1.8f;
+            return (int)height * 0.3f;
 	    }
 
         /// <summary>
@@ -211,31 +207,6 @@ print("FIXING FLAG = "+flagKey);
         /// <returns></returns>
         internal string Key() {  return "("+Place.Where.X+","+Place.Where.Y+")";}
 
-    //======================================================================================================================
-
-        internal Vector3 startDrag = Vector3.zero;
-        internal Vector3 lastDrag = Vector3.zero;
-
-	    public void OnBeginDrag(PointerEventData eventData) {
-		    //print("Begin Drag = "+eventData );
-            startDrag = eventData.position;
-            lastDrag = eventData.position;
-	    }
-
-	    public void OnDrag(PointerEventData eventData) {
-
-		    //print("On Drag = "+eventData );
-            Vector3 next = eventData.position;
-            Vector3 delta = next - lastDrag;
-            lastDrag = next;
-
-            // fire off event
-           tileDragEvent.Invoke( startDrag, delta );
-	    }
-
-	    public void OnEndDrag(PointerEventData eventData) {
-		    //print("End Drag = "+eventData );
-	    }
     }
     
 }
