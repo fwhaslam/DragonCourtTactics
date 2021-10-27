@@ -10,7 +10,7 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
-######################## Fred Haslam has some special attributes in this project
+######################## Fred Haslam has some special attributes in this project ########################
 
 # ignoring DLL copied into unity folder :: ignoring that was a mistake, it messed things up good
 #RealmModel.dll*
@@ -27,12 +27,13 @@ bin/
 Assets/_DLLs/
 **/InitTestScene*.unity
 
-# ignoring auto-generate unity folders
+# ignoring auto-generated and user-specific unity folders
 UIElementsSchema/
 Logs/
+UserSettings/
 
+######################## End Fred Haslam ########################
 
-########################
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
 
