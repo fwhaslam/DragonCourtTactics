@@ -3,26 +3,29 @@
 =======
 
 Check that modal panel is being used correctly.
+* is the modal panel displayed to prevent background clicks ?
+Cleanup modal dialog appearance
+* modal dialog colors + shapes need some work
+
+[done] figure out the dependency tree
+* why are we using System.Runtime.CompilerServices.Unsafe
+* https://stackoverflow.com/questions/6653715/view-nuget-package-dependency-hierarchy
+* turns out it is a dependency of System.Memory
 
 Can we check the console in PlayModeTests to assert there are no failures?
 
 create play structure in realm
 * need to add 'action' construction and validation
-* need to craete 'move-to' projection when selecting owned agent
+* need to create 'move-to' projection when selecting owned agent
 * need to apply action changes and produce event stream
 * need to create events for end of agent action and end of faction turn
 
 flag icon to turn flags on/off
 
-[done] add music folder under resource
-* [done] automate credits creation, resource/attribution folder?
-* [done] add tests to verify that music has attribution information
-* create credits panel for main scene
+create credits panel for main scene
 
-Cleanup modal dialog appearance
-* modal dialog colors + shapes need some work
-
-Move RealmModel to a separate project.
+[done] Move RealmModel to a separate project.
+* [need] figure out how to copy DLLs based on developer local settings
 
 Integrate verbose with RealmModel ( after .net5 change? )
 
@@ -35,7 +38,6 @@ better camera angle and zoom
 * pc supports wheel zoom
 
 better select and turning
-* [done] single click in empty space will 'drag' ( added extra 'plane' to catch clicks )
 * single click on agent, or double click will select/deselect
 * prettier tile/agent select icon
 
@@ -45,6 +47,7 @@ can we put the test utilities from PlayModeTests into EditModeTests?  ( and stil
 
 draw flag objects in tiles for: Lever, Chest, Sack, Hostage, Door, Entry, etc.
 
+Move 'edit' panels to bottom of screen, similar to Hexonia
 
 # OBJECTIVES
 ============
